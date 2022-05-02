@@ -56,10 +56,13 @@ namespace auto_battler_frontend
             this.battleOp2 = new System.Windows.Forms.Panel();
             this.battleOp1 = new System.Windows.Forms.Panel();
             this.battlePanel = new System.Windows.Forms.Panel();
+            this.effectImage = new System.Windows.Forms.PictureBox();
+            this.party1DamageText = new System.Windows.Forms.Label();
+            this.party2DamageText = new System.Windows.Forms.Label();
             this.partyPanel = new System.Windows.Forms.Panel();
             this.shopPanel = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
             this.battlePanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.effectImage)).BeginInit();
             this.partyPanel.SuspendLayout();
             this.shopPanel.SuspendLayout();
             this.SuspendLayout();
@@ -187,7 +190,7 @@ namespace auto_battler_frontend
             // battle1
             // 
             this.battle1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle1.Location = new System.Drawing.Point(580, 34);
+            this.battle1.Location = new System.Drawing.Point(583, 153);
             this.battle1.Name = "battle1";
             this.battle1.Size = new System.Drawing.Size(125, 125);
             this.battle1.TabIndex = 11;
@@ -195,7 +198,7 @@ namespace auto_battler_frontend
             // battle2
             // 
             this.battle2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle2.Location = new System.Drawing.Point(449, 34);
+            this.battle2.Location = new System.Drawing.Point(452, 153);
             this.battle2.Name = "battle2";
             this.battle2.Size = new System.Drawing.Size(125, 125);
             this.battle2.TabIndex = 10;
@@ -203,7 +206,7 @@ namespace auto_battler_frontend
             // battle3
             // 
             this.battle3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle3.Location = new System.Drawing.Point(318, 34);
+            this.battle3.Location = new System.Drawing.Point(321, 153);
             this.battle3.Name = "battle3";
             this.battle3.Size = new System.Drawing.Size(125, 125);
             this.battle3.TabIndex = 9;
@@ -211,7 +214,7 @@ namespace auto_battler_frontend
             // battle4
             // 
             this.battle4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle4.Location = new System.Drawing.Point(187, 34);
+            this.battle4.Location = new System.Drawing.Point(190, 153);
             this.battle4.Name = "battle4";
             this.battle4.Size = new System.Drawing.Size(125, 125);
             this.battle4.TabIndex = 8;
@@ -219,7 +222,7 @@ namespace auto_battler_frontend
             // battle5
             // 
             this.battle5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle5.Location = new System.Drawing.Point(56, 34);
+            this.battle5.Location = new System.Drawing.Point(59, 153);
             this.battle5.Name = "battle5";
             this.battle5.Size = new System.Drawing.Size(125, 125);
             this.battle5.TabIndex = 7;
@@ -227,7 +230,7 @@ namespace auto_battler_frontend
             // battleOp5
             // 
             this.battleOp5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp5.Location = new System.Drawing.Point(1311, 34);
+            this.battleOp5.Location = new System.Drawing.Point(1314, 153);
             this.battleOp5.Name = "battleOp5";
             this.battleOp5.Size = new System.Drawing.Size(125, 125);
             this.battleOp5.TabIndex = 16;
@@ -235,7 +238,7 @@ namespace auto_battler_frontend
             // battleOp4
             // 
             this.battleOp4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp4.Location = new System.Drawing.Point(1180, 34);
+            this.battleOp4.Location = new System.Drawing.Point(1183, 153);
             this.battleOp4.Name = "battleOp4";
             this.battleOp4.Size = new System.Drawing.Size(125, 125);
             this.battleOp4.TabIndex = 15;
@@ -243,7 +246,7 @@ namespace auto_battler_frontend
             // battleOp3
             // 
             this.battleOp3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp3.Location = new System.Drawing.Point(1049, 34);
+            this.battleOp3.Location = new System.Drawing.Point(1052, 153);
             this.battleOp3.Name = "battleOp3";
             this.battleOp3.Size = new System.Drawing.Size(125, 125);
             this.battleOp3.TabIndex = 14;
@@ -251,7 +254,7 @@ namespace auto_battler_frontend
             // battleOp2
             // 
             this.battleOp2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp2.Location = new System.Drawing.Point(918, 34);
+            this.battleOp2.Location = new System.Drawing.Point(921, 153);
             this.battleOp2.Name = "battleOp2";
             this.battleOp2.Size = new System.Drawing.Size(125, 125);
             this.battleOp2.TabIndex = 13;
@@ -259,13 +262,16 @@ namespace auto_battler_frontend
             // battleOp1
             // 
             this.battleOp1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp1.Location = new System.Drawing.Point(787, 34);
+            this.battleOp1.Location = new System.Drawing.Point(790, 153);
             this.battleOp1.Name = "battleOp1";
             this.battleOp1.Size = new System.Drawing.Size(125, 125);
             this.battleOp1.TabIndex = 12;
             // 
             // battlePanel
             // 
+            this.battlePanel.Controls.Add(this.effectImage);
+            this.battlePanel.Controls.Add(this.party1DamageText);
+            this.battlePanel.Controls.Add(this.party2DamageText);
             this.battlePanel.Controls.Add(this.battleOp5);
             this.battlePanel.Controls.Add(this.battle1);
             this.battlePanel.Controls.Add(this.battleOp4);
@@ -276,10 +282,48 @@ namespace auto_battler_frontend
             this.battlePanel.Controls.Add(this.battle3);
             this.battlePanel.Controls.Add(this.battle4);
             this.battlePanel.Controls.Add(this.battle5);
-            this.battlePanel.Location = new System.Drawing.Point(66, 265);
+            this.battlePanel.Location = new System.Drawing.Point(66, 180);
             this.battlePanel.Name = "battlePanel";
-            this.battlePanel.Size = new System.Drawing.Size(1491, 209);
+            this.battlePanel.Size = new System.Drawing.Size(1491, 310);
             this.battlePanel.TabIndex = 17;
+            this.battlePanel.Visible = false;
+            // 
+            // effectImage
+            // 
+            this.effectImage.BackColor = System.Drawing.Color.Transparent;
+            this.effectImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.effectImage.Location = new System.Drawing.Point(609, 63);
+            this.effectImage.Name = "effectImage";
+            this.effectImage.Size = new System.Drawing.Size(75, 75);
+            this.effectImage.TabIndex = 23;
+            this.effectImage.TabStop = false;
+            this.effectImage.Visible = false;
+            // 
+            // party1DamageText
+            // 
+            this.party1DamageText.BackColor = System.Drawing.Color.Transparent;
+            this.party1DamageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.party1DamageText.ForeColor = System.Drawing.Color.Red;
+            this.party1DamageText.Location = new System.Drawing.Point(674, 175);
+            this.party1DamageText.Name = "party1DamageText";
+            this.party1DamageText.Size = new System.Drawing.Size(62, 45);
+            this.party1DamageText.TabIndex = 21;
+            this.party1DamageText.Text = "55";
+            this.party1DamageText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.party1DamageText.Visible = false;
+            // 
+            // party2DamageText
+            // 
+            this.party2DamageText.BackColor = System.Drawing.Color.Transparent;
+            this.party2DamageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.party2DamageText.ForeColor = System.Drawing.Color.Red;
+            this.party2DamageText.Location = new System.Drawing.Point(755, 175);
+            this.party2DamageText.Name = "party2DamageText";
+            this.party2DamageText.Size = new System.Drawing.Size(62, 45);
+            this.party2DamageText.TabIndex = 22;
+            this.party2DamageText.Text = "55";
+            this.party2DamageText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.party2DamageText.Visible = false;
             // 
             // partyPanel
             // 
@@ -306,22 +350,11 @@ namespace auto_battler_frontend
             this.shopPanel.Size = new System.Drawing.Size(813, 294);
             this.shopPanel.TabIndex = 19;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(960, 697);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(198, 110);
-            this.button1.TabIndex = 20;
-            this.button1.Text = "attack";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // Battler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1582, 853);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.shopPanel);
             this.Controls.Add(this.partyPanel);
             this.Controls.Add(this.battlePanel);
@@ -332,17 +365,22 @@ namespace auto_battler_frontend
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Battler";
             this.battlePanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.effectImage)).EndInit();
             this.partyPanel.ResumeLayout(false);
             this.shopPanel.ResumeLayout(false);
             this.ResumeLayout(false);
         }
 
-        private System.Windows.Forms.Button button1;
+        public System.Windows.Forms.PictureBox effectImage;
 
-        private System.Windows.Forms.Panel partyPanel;
-        private System.Windows.Forms.Panel shopPanel;
+        public System.Windows.Forms.Label party2DamageText;
 
-        private System.Windows.Forms.Panel battlePanel;
+        public System.Windows.Forms.Label party1DamageText;
+
+        public System.Windows.Forms.Panel partyPanel;
+        public System.Windows.Forms.Panel shopPanel;
+
+        public System.Windows.Forms.Panel battlePanel;
 
         private System.Windows.Forms.Panel battle5;
         private System.Windows.Forms.Panel battleOp5;

@@ -14,6 +14,11 @@
             party2.shift();
         }
         
+        if (count === 0) {
+            DoStartBattleEffects(party1,party2, party1randomThings);
+            DoStartBattleEffects(party2,party1, party2randomThings);
+        }
+        
         // Do attacks
         party2[0].currentHealth -= party1[0].currentAttack;
         party1[0].currentHealth -= party2[0].currentAttack;
@@ -66,6 +71,10 @@ function CheckDeadEffects(party, randomThings) {
             if (ability.effect.kind === "ModifyStats") {
                 let effect = ability.effect;
                 if (effect.target.kind === "RandomFriend") {
+                    if(party.length === 1) {
+                        return;
+                    }
+                    
                     for (let i = 0; i < effect.target.n; i++) {
                         let randomPet = party[Math.floor(Math.random() * (party.length-1))+1];
                         while (randomPet == null || randomPet === pet) {
@@ -74,8 +83,39 @@ function CheckDeadEffects(party, randomThings) {
                         randomThings.push({
                             petTrigger: party.indexOf(pet),
                             petTarget: party.indexOf(randomPet),
+                            abilityTrigger: ability.trigger
                         })
                         ModifyStats(randomPet, effect);
+                    }
+                }
+            }
+        }
+    }
+}
+
+function DoStartBattleEffects(party1,party2, randomThings) {
+    for (let i = 0; i < party1.length; i++) {
+        let pet = party1[i];
+        if(pet != null) {
+            let ability = pet.level1Ability;
+            
+            if(ability != null && ability.trigger === "StartOfBattle") {
+                if (ability.effect.kind === "DealDamage") {
+                    let effect = ability.effect;
+                    if (effect.target.kind === "RandomEnemy") {
+                        for (let j = 0; j < effect.target.n; j++) {
+                            let randomPet = party2[Math.floor(Math.random() * (party2.length))];
+                            while (randomPet == null) {
+                                randomPet = party2[Math.floor(Math.random() * (party2.length))];
+                            }
+                            
+                            randomThings.push({
+                                petTrigger: party1.indexOf(pet),
+                                petTarget: party2.indexOf(randomPet),
+                                abilityTrigger: ability.trigger
+                            })
+                            randomPet.currentHealth -= effect.amount;
+                        }
                     }
                 }
             }

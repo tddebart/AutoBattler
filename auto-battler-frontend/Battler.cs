@@ -12,6 +12,7 @@ using auto_battler_frontend.Properties;
 using DebugTools.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using pokemon_frontend.Properties;
 using SocketIOClient;
 using VisualEffects;
 using VisualEffects.Animations.Effects;
@@ -33,6 +34,8 @@ namespace auto_battler_frontend
         
         public Pet[] shopPets = new Pet[5];
         public Pet[] partyPets = new Pet[5];
+
+        public static Battler instance;
         
         
         //TODO: Animations.
@@ -47,6 +50,8 @@ namespace auto_battler_frontend
 
         public Battler(string roomCode, string username, SocketIO client)
         {
+            instance = this;
+            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             InitializeComponent();
             this.roomCode = roomCode;
             this.username = username;
@@ -149,15 +154,11 @@ namespace auto_battler_frontend
 
                 var oppPets = new LinkedList<Pet?>(oppPetsArr);
 
-                // partyPanel.Invoke((Action)(() => partyPanel.Hide()));
-                // shopPanel.Invoke((Action)(() => shopPanel.Hide()));
-                // battlePanel.Invoke((Action)(() => battlePanel.Show()));
-                
-                BattleHelper.AnimateBattle(pets, oppPets, battle1, battleOp1,party1RandomThings,party2RandomThings, this).ConfigureAwait(false);
+                partyPanel.Invoke((Action)(() => partyPanel.Hide()));
+                shopPanel.Invoke((Action)(() => shopPanel.Hide()));
+                battlePanel.Invoke((Action)(() => battlePanel.Show()));
 
-                // partyPanel.Invoke((Action)(() => partyPanel.Show()));
-                // shopPanel.Invoke((Action)(() => shopPanel.Show()));
-                // battlePanel.Invoke((Action)(() => battlePanel.Hide()));
+                BattleHelper.AnimateBattle(pets, oppPets, battle1, battleOp1, party1RandomThings, party2RandomThings, this);
             }
 
             client.On("battleStarted", BattleStarted);
@@ -271,13 +272,6 @@ namespace auto_battler_frontend
         {
             client.EmitAsync("getShop");
         }
-        
-        public void SetBattleVisible(bool visible)
-        {
-            battlePanel.Visible = visible;
-            partyPanel.Visible = !visible;
-            shopPanel.Visible = !visible;
-        }
 
         public async Task ClearControls(string controlPrefix)
         {
@@ -302,24 +296,24 @@ namespace auto_battler_frontend
             client.EmitAsync("ready");
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            var battleOrig = battle1.Location;
-            battle1.Animate(new XLocationEffect(), EasingFunctions.BounceEaseOut, battle1.Location.X + 50, 400, 50, true);
-            battle1.Animate(new YLocationEffect(), EasingFunctions.BounceEaseOut, battle1.Location.Y - 25, 400, 50, true);
-            Task.Delay(1000).ContinueWith(_ =>
-            {
-                battle1.Location = battleOrig;
-            });
-            
-            var partyOppOrig = battleOp1.Location;
-            battleOp1.Animate(new XLocationEffect(), EasingFunctions.BounceEaseOut, battleOp1.Location.X - 50, 400, 50, true);
-            battleOp1.Animate(new YLocationEffect(), EasingFunctions.BounceEaseOut, battleOp1.Location.Y - 25, 400, 50, true);
-            Task.Delay(1000).ContinueWith(_ =>
-            {
-                battleOp1.Location = partyOppOrig;
-            });
-        }
+        // private void button1_Click(object sender, EventArgs e)
+        // {
+        //     var battleOrig = battle1.Location;
+        //     battle1.Animate(new XLocationEffect(), EasingFunctions.BounceEaseOut, battle1.Location.X + 50, 400, 50, true);
+        //     battle1.Animate(new YLocationEffect(), EasingFunctions.BounceEaseOut, battle1.Location.Y - 25, 400, 50, true);
+        //     Task.Delay(1000).ContinueWith(_ =>
+        //     {
+        //         battle1.Location = battleOrig;
+        //     });
+        //     
+        //     var partyOppOrig = battleOp1.Location;
+        //     battleOp1.Animate(new XLocationEffect(), EasingFunctions.BounceEaseOut, battleOp1.Location.X - 50, 400, 50, true);
+        //     battleOp1.Animate(new YLocationEffect(), EasingFunctions.BounceEaseOut, battleOp1.Location.Y - 25, 400, 50, true);
+        //     Task.Delay(1000).ContinueWith(_ =>
+        //     {
+        //         battleOp1.Location = partyOppOrig;
+        //     });
+        // }
 
         public class RandomThing
         {
@@ -327,6 +321,8 @@ namespace auto_battler_frontend
             public int petTriggerIndex;
             [JsonProperty("petTarget")]
             public int petTargetIndex;
+            [JsonProperty("abilityTrigger")]
+            public Trigger abilityTrigger;
         }
     }
 }
