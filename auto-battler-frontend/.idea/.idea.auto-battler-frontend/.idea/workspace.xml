@@ -10,8 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21d1e2b7-d228-4501-9bc0-2c311c6f2a5e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.auto-battler-frontend/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/AutoBattler.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/AutoBattler.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.auto-battler-frontend/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.auto-battler-frontend/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Battler.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Battler.Designer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Battler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Battler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../auto-battler-server/BattleHelper.js" beforeDir="false" afterPath="$PROJECT_DIR$/../auto-battler-server/BattleHelper.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,13 +121,14 @@
       <updated>1650880482004</updated>
       <workItem from="1650880539731" duration="7680000" />
       <workItem from="1651059191080" duration="2030000" />
-      <workItem from="1651061673945" duration="40379000" />
+      <workItem from="1651061673945" duration="42386000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">

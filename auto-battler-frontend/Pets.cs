@@ -48,7 +48,7 @@ public class Target
     }
 
 
-    public class Effect
+public class Effect
     {        
         public string Kind { get; set; }
         

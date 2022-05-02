@@ -94,6 +94,7 @@
         <Reference Include="WindowsBase" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="BattleHelper.cs" />
         <Compile Include="Battler.cs">
           <SubType>Form</SubType>
         </Compile>

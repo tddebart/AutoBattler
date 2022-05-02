@@ -75,7 +75,7 @@ io.on('connection', socket => {
                 pets.push(GetRandomPet());
             }
             
-            console.log('Send shop: ' + pets.map(p => p.name));
+            console.log('Send shop: ' + pets.map(p => p.name) + ' to ' + user.username);
             
             user.shopPets = pets;
             
@@ -120,9 +120,45 @@ io.on('connection', socket => {
             
             if (user.ready && opponent != null && opponent.ready) {
                 console.log(`${user.username} and ${opponent.username} are ready to battle!`);
-                SimulateBattle(user, opponent);
+                
+                
+                var randomThings = SimulateBattle(user, opponent);
+                
+                
+                // Send party to user with socket id
+                socket.emit('receiveParty', JSON.stringify(user.partyPets));
+                socket.broadcast.to(user.room).emit('receiveParty', JSON.stringify(opponent.partyPets));
+                socket.emit('battleStarted', JSON.stringify({
+                    oppPets: opponent.partyPets,
+                    party1RandomThings: randomThings.party1RandomThings,
+                    party2RandomThings: randomThings.party2RandomThings
+                }));
+                socket.broadcast.to(user.room).emit('battleStarted', JSON.stringify({
+                    oppPets: user.partyPets,
+                    party1RandomThings: randomThings.party2RandomThings,
+                    party2RandomThings: randomThings.party1RandomThings
+                }));
+
+
+                
+                
                 user.ready = false;
                 opponent.ready = false;
+            }
+            
+            if(opponent == null) {
+                console.log(`${user.username} is going to battle themself!`);
+                
+                let randomThings = SimulateBattle(user, user);
+                
+                socket.emit('receiveParty', JSON.stringify(user.partyPets));
+                socket.emit('battleStarted', JSON.stringify({
+                    oppPets: user.partyPets,
+                    party1RandomThings: randomThings.party1,
+                    party2RandomThings: randomThings.party2
+                }));
+                
+                user.ready = false;
             }
         }
     });

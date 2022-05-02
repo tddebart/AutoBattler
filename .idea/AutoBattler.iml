@@ -7,6 +7,33 @@
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/auto-battler-server/bin" />
       <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/bin/Release" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/auto-battler-server/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/EmitterSharp.1.1.1.1" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/EngineIOSharp.2.0.0.1" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/Microsoft.Bcl.AsyncInterfaces.6.0.0" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/MouseKeyHook.5.6.0" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/Newtonsoft.Json.9.0.1" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/Newtonsoft.Json.13.0.1" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/SimpleThreadMonitor.1.0.2.1" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/SocketIOClient.3.0.6" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/SocketIOSharp.2.0.3" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.Buffers.4.5.1" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.Collections.4.3.0" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.Memory.4.5.4" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.Numerics.Vectors.4.5.0" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.Reactive.5.0.0" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.Runtime.CompilerServices.Unsafe.6.0.0" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.Text.Encodings.Web.6.0.0" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.Text.Json.6.0.2" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.Threading.Tasks.Extensions.4.5.4" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/System.ValueTuple.4.5.0" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/WebSocketSharp.CustomHeaders.CustomHttpServer.1.0.2.3" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/packages/WinForm.Inspector.Tool.1.0.0.9" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/VisualEffects/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/VisualEffects/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/.vs" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/auto-battler-frontend/obj" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using auto_battler_frontend.Properties;
 using DebugTools.Tools;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SocketIOClient;
 using VisualEffects;
 using VisualEffects.Animations.Effects;
@@ -59,60 +60,30 @@ namespace auto_battler_frontend
 
             client.On("receiveShop",  async(response) =>
             {
-                await ClearShop();
+                await ClearControls("shop");
                 var pets = JsonConvert.DeserializeObject<List<Pet>>(response.GetValue<string>());
                 
                 if(pets == null) return;
-                
 
                 shopPets = pets.ToArray();
-                
-                for (var i = 1; i < 6; i++)
+
+                MakePets(pets, "shop", (Label, index) =>
                 {
-                    // var pet = Pets.pets.Where(p => p.Packs.Contains(Pack.StandardPack) && p.Tier == "1").Shuffle(new Random((int)DateTime.Now.Ticks+i)).First();
-
-                    var pet = pets[i - 1];
-                    
-                    if(pet == null) continue;
-                    
-                    var shopContainer = Controls.Find("shop" + i, true).First();
-                    
-                    var label = new Label
+                    if (selectedShopIndex == index)
                     {
-                        Text = pet.Name + "\n\n\n" + pet.CurrentAttack + "           " + pet.CurrentHealth,
-                        TextAlign = ContentAlignment.MiddleCenter,
-                        Size = shopContainer.Size,
-                        Location = new Point(0, 0),
-                    };
-
-                    label.Font = new Font(label.Font.FontFamily, 17f,label.Font.Style);
-                    var unicodeCharacter = pet.Image.UnicodeCodePoint;
-
-                    label.Image = GetImage(unicodeCharacter, shopContainer);
-
-                    var index = i;
-                    label.Click += (sender, args) =>
-                    {
-                        selectedShopIndex = index-1;
-                    };
-
-                    label.MouseHover += (_, _) =>
-                    {
-                        hoverInfo.Text = $"{pet.Name}\n{pet.Level1Ability.Description}";
-                    };
-
-                    void Action()
-                    {
-                        shopContainer.Controls.Add(label);
+                        selectedShopIndex = -1;
+                        Label.BackColor = Color.Transparent;
                     }
-
-                    shopContainer.BeginInvoke((Action)Action);
-                }
+                    else
+                    {
+                        selectedShopIndex = index;
+                        Label.BackColor = Color.LightBlue;
+                    }
+                });
             });
             
             client.On("receiveParty", async(response) =>
             {
-                
                 var pets = JsonConvert.DeserializeObject<List<Pet>>(response.GetValue<string>(), new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Include,
@@ -121,7 +92,7 @@ namespace auto_battler_frontend
                 
                 if(pets == null) return;
                 
-                await ClearParty();
+                await ClearControls("party");
                 
                 while (pets.Count < 5)
                 {
@@ -129,59 +100,67 @@ namespace auto_battler_frontend
                 }
                 
                 partyPets = pets.ToArray();
-                
-                for (var i = 1; i < 6; i++)
+
+                MakePets(pets, "party", (label, index) =>
                 {
-                    var pet = pets[i - 1];
-                    
-                    if(pet == null) continue;
-                    
-                    var partyContainer = Controls.Find("party" + i, true).First();
-                    
-                    var label = new Label
+                    if (selectedPartyIndex == index)
                     {
-                        Text = pet.Name + "\n\n\n" + pet.CurrentAttack + "           " + pet.CurrentHealth,
-                        TextAlign = ContentAlignment.MiddleCenter,
-                        Size = partyContainer.Size,
-                        Location = new Point(0, 0),
-                    };
-
-                    label.Font = new Font(label.Font.FontFamily, 17f,label.Font.Style);
-                    var unicodeCharacter = pet.Image.UnicodeCodePoint;
-
-                    label.Image = GetImage(unicodeCharacter, partyContainer);
-
-                    var index = i-1;
-                    label.Click += (_, _) =>
-                    {
-                        if (selectedPartyIndex == index)
-                        {
-                            selectedPartyIndex = -1;
-                        }
-                        else if (selectedPartyIndex != -1)
-                        {
-                            client.EmitAsync("swapPet", selectedPartyIndex, index);
-                            selectedPartyIndex = -1;
-                        }
-                        else
-                        {
-                            selectedPartyIndex = index;
-                        }
-                    };
-
-                    label.MouseHover += (_, _) =>
-                    {
-                        hoverInfo.Text = $"{pet.Name}\n{pet.Level1Ability.Description}";
-                    };
-
-                    void Action()
-                    {
-                        partyContainer.Controls.Add(label);
+                        selectedPartyIndex = -1;
+                        label.BackColor = Color.Transparent;
                     }
-
-                    partyContainer.BeginInvoke((Action)Action);
-                }
+                    else if (selectedPartyIndex != -1)
+                    {
+                        client.EmitAsync("swapPet", selectedPartyIndex, index);
+                        selectedPartyIndex = -1;
+                    }
+                    else
+                    {
+                        selectedPartyIndex = index;
+                        label.BackColor = Color.LightBlue;
+                    }
+                });
             });
+
+            void BattleStarted(SocketIOResponse response)
+            {
+                var pets = new LinkedList<Pet?>((Pet[])partyPets.Clone());
+                var info = JsonConvert.DeserializeObject(response.GetValue<string>(), new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include });
+                
+                if(info == null) return;
+                
+                var oppPetsArr = (info as JObject).GetValue("oppPets").ToArray().Select(p => p.ToObject<Pet?>()).ToArray();
+                
+                var party1RandomThings = (info as JObject).GetValue("party1RandomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToArray();
+                var party2RandomThings = (info as JObject).GetValue("party2RandomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToArray();
+                
+
+                if (oppPetsArr == null) return;
+
+                while (oppPetsArr.Length < 5)
+                {
+                    oppPetsArr = oppPetsArr.Concat(new[] { (Pet?)null }).ToArray();
+                }
+
+                ClearControls("battle");
+                ClearControls("battleOp");
+
+                MakePets(partyPets, "battle", fontSize: 13);
+                MakePets(oppPetsArr, "battleOp", fontSize: 13, rightSide: true);
+
+                var oppPets = new LinkedList<Pet?>(oppPetsArr);
+
+                // partyPanel.Invoke((Action)(() => partyPanel.Hide()));
+                // shopPanel.Invoke((Action)(() => shopPanel.Hide()));
+                // battlePanel.Invoke((Action)(() => battlePanel.Show()));
+                
+                BattleHelper.AnimateBattle(pets, oppPets, battle1, battleOp1,party1RandomThings,party2RandomThings, this).ConfigureAwait(false);
+
+                // partyPanel.Invoke((Action)(() => partyPanel.Show()));
+                // shopPanel.Invoke((Action)(() => shopPanel.Show()));
+                // battlePanel.Invoke((Action)(() => battlePanel.Hide()));
+            }
+
+            client.On("battleStarted", BattleStarted);
 
             InitializeClickEvents();
 
@@ -191,7 +170,53 @@ namespace auto_battler_frontend
             };
         }
 
-        public System.Drawing.Image GetImage(string unicodeCharacter, Control sizeReference)
+        public void MakePets(IList<Pet?> pets, string controllerPrefix, Action<Control, int>? labelClickEvent = null, float fontSize = 17f, bool rightSide = false)
+        {
+            for (var i = 1; i < 6; i++)
+            {
+                var pet = pets[i - 1];
+                
+                if(pet == null) continue;
+                
+                var container = Controls.Find(controllerPrefix + i, true).First();
+                
+                var label = new Label
+                {
+                    Text = pet.Name + "\n\n\n" + pet.CurrentAttack + "           " + pet.CurrentHealth,
+                    TextAlign = ContentAlignment.BottomCenter,
+                    Size = container.Size,
+                    Location = new Point(0, 0),
+                };
+
+                label.Font = new Font(label.Font.FontFamily, fontSize,label.Font.Style);
+                var unicodeCharacter = pet.Image.UnicodeCodePoint;
+
+                label.Image = GetImage(unicodeCharacter, container, rightSide);
+
+                var index = i-1;
+                if (labelClickEvent != null)
+                {
+                    label.Click += (_,_) =>
+                    {
+                        labelClickEvent.Invoke(label, index);
+                    };
+                }
+
+                label.MouseEnter += (_, _) =>
+                {
+                    hoverInfo.Text = $"{pet.Name}\n{pet.Level1Ability.Description}";
+                };
+
+                void Action()
+                {
+                    container.Controls.Add(label);
+                }
+
+                container.BeginInvoke((Action)Action);
+            }
+        }
+
+        public System.Drawing.Image GetImage(string unicodeCharacter, Control sizeReference, bool rightSide = false)
         {
             var x = unicodeCharacter[0];
             var y = unicodeCharacter[1];
@@ -205,7 +230,10 @@ namespace auto_battler_frontend
 
             var image = Resources.ResourceManager.GetObject($"emoji_u{unicodeHexCode.ToLower()}") as System.Drawing.Image;
             image = new Bitmap(image, new Size(sizeReference.Size.Width, sizeReference.Size.Height));
-            image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            if (!rightSide)
+            {
+                image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            }
             
             return image;
         }
@@ -239,57 +267,32 @@ namespace auto_battler_frontend
             client.EmitAsync("disconnect");
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            
-            
-            // PictureBox pictureBox = new PictureBox();
-            //
-            //
-            // Image myBitmap = Resources.emoji_u1f422;
-            // myBitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
-            // Size bitmapSize = new Size(myBitmap.Width, myBitmap.Height);
-            //
-            // pictureBox.Size = panel1.Size;
-            // pictureBox.Image = myBitmap;
-            // pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-            // pictureBox.Location = new Point(0, 0);
-            // panel1.Controls.Add(pictureBox);
-
-            // this.FormBorderStyle = FormBorderStyle.None;
-        }
-
         private void rollButton_Click(object sender, EventArgs e)
         {
             client.EmitAsync("getShop");
         }
-
-        public async Task ClearShop()
-        {
-            await Task.Run(() =>
-            {
-                for (var i = 1; i < 6; i++)
-                {
-                    var shopContainer = Controls.Find("shop" + i, true).First();
-                    shopContainer.BeginInvoke((Action)delegate
-                    {
-                        shopContainer.Controls.Clear();
-                    });
-                }
-            });
-        }
         
-        public async Task ClearParty()
+        public void SetBattleVisible(bool visible)
+        {
+            battlePanel.Visible = visible;
+            partyPanel.Visible = !visible;
+            shopPanel.Visible = !visible;
+        }
+
+        public async Task ClearControls(string controlPrefix)
         {
             await Task.Run(() =>
             {
                 for (var i = 1; i < 6; i++)
                 {
-                    var petContainer = Controls.Find("party" + i, true).First();
-                    petContainer.BeginInvoke((Action)delegate
+                    var container = Controls.Find(controlPrefix + i, true)?.First();
+                    if (container != null)
                     {
-                        petContainer.Controls.Clear();
-                    });
+                        container.BeginInvoke((Action)delegate
+                        {
+                            container.Controls.Clear();
+                        });
+                    }
                 }
             });
         }
@@ -297,6 +300,33 @@ namespace auto_battler_frontend
         private void readyButton_Click(object sender, EventArgs e)
         {
             client.EmitAsync("ready");
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var battleOrig = battle1.Location;
+            battle1.Animate(new XLocationEffect(), EasingFunctions.BounceEaseOut, battle1.Location.X + 50, 400, 50, true);
+            battle1.Animate(new YLocationEffect(), EasingFunctions.BounceEaseOut, battle1.Location.Y - 25, 400, 50, true);
+            Task.Delay(1000).ContinueWith(_ =>
+            {
+                battle1.Location = battleOrig;
+            });
+            
+            var partyOppOrig = battleOp1.Location;
+            battleOp1.Animate(new XLocationEffect(), EasingFunctions.BounceEaseOut, battleOp1.Location.X - 50, 400, 50, true);
+            battleOp1.Animate(new YLocationEffect(), EasingFunctions.BounceEaseOut, battleOp1.Location.Y - 25, 400, 50, true);
+            Task.Delay(1000).ContinueWith(_ =>
+            {
+                battleOp1.Location = partyOppOrig;
+            });
+        }
+
+        public class RandomThing
+        {
+            [JsonProperty("petTrigger")]
+            public int petTriggerIndex;
+            [JsonProperty("petTarget")]
+            public int petTargetIndex;
         }
     }
 }
