@@ -7,7 +7,6 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using auto_battler_frontend;
 using pokemon_frontend.Properties;
 using VisualEffects;
@@ -16,74 +15,26 @@ using VisualEffects.Easing;
 
 public static class BattleHelper
 {
-    public static void SimulateBattle(LinkedList<Pet?> party1, LinkedList<Pet?> party2)
+    public static LinkedList<Pet?> party1;
+    public static LinkedList<Pet?> party2;
+    public static IList<Battler.RandomThing?> party1RandomThings;
+    public static IList<Battler.RandomThing?> party2RandomThings;
+
+    public static async void AnimateBattle(LinkedList<Pet?> party1Arg, LinkedList<Pet?> party2Arg, IList<Battler.RandomThing?> party1RandomThingsArg, IList<Battler.RandomThing?> party2RandomThingsArg)
     {
+        var battler = Battler.instance;
+        var battle1 = Battler.instance.battle1;
+        var battleOp1 = Battler.instance.battleOp1;
+        
+        party1 = party1Arg;
+        party2 = party2Arg;
+        party1RandomThings = party1RandomThingsArg;
+        party2RandomThings = party2RandomThingsArg;
+        
         var count = 0;
         while (!AreAllPetsDead(party1) && !AreAllPetsDead(party2) && count < 100)
         {
-            while (party1.First.Value == null)
-            {
-                party1.AddLast(party1.First.Value);
-                party1.RemoveFirst();
-            }
-            
-            while (party2.First.Value == null)
-            {
-                party2.AddLast(party2.First.Value);
-                party2.RemoveFirst();
-            }
-            
-            var pet1 = party1.First.Value;
-            var pet2 = party2.First.Value;
-
-            pet1.CurrentHealth -= pet2.CurrentAttack;
-            pet2.CurrentHealth -= pet1.CurrentAttack;
-            
-            if (pet1.CurrentHealth <= 0)
-            {
-                party1.RemoveFirst();
-                party1.AddLast((Pet?)null);
-            }
-            
-            if (pet2.CurrentHealth <= 0)
-            {
-                party2.RemoveFirst();
-                party2.AddLast((Pet?)null);
-            }
-            
-            count++;
-        }
-        
-        // Print out results
-        var party1Dead = AreAllPetsDead(party1);
-        var party2Dead = AreAllPetsDead(party2);
-        
-        if (party1Dead && party2Dead)
-        {
-            Debug.WriteLine("Draw");
-        }
-        else if (party1Dead)
-        {
-            Debug.WriteLine("Party 2 wins!");
-        }
-        else if (party2Dead)
-        {
-            Debug.WriteLine("Party 1 wins!");
-        }
-        else
-        {
-            Debug.WriteLine("Too many turns!");
-        }
-        
-        party1.Clear();
-        party2.Clear();
-    }
-
-    public static async void AnimateBattle(LinkedList<Pet?> party1, LinkedList<Pet?> party2, Control battle1, Control battleOp1,IList<Battler.RandomThing?> party1RandomThings, IList<Battler.RandomThing?> party2RandomThings, Battler battler)
-    {
-        var count = 0;
-        while (!AreAllPetsDead(party1) && !AreAllPetsDead(party2) && count < 100)
-        {
+            // Make sure there are no gaps in the party
             MovePetsForward(party1,party2);
 
             await Task.Delay(350).ConfigureAwait(false);
@@ -92,17 +43,23 @@ public static class BattleHelper
             {
                 await DoStartBattleEffects(party1.ToArray(),party2.ToArray(),party1RandomThings, true);
                 await DoStartBattleEffects(party2.ToArray(),party1.ToArray(),party2RandomThings, false);
-            }
+
+                UpdateVisuals();
             
-            battler.ClearControls("battle");
-            battler.ClearControls("battleOp");
-                
-            battler.MakePets(party1.ToArray(), "battle", fontSize: 13);
-            battler.MakePets(party2.ToArray(), "battleOp", fontSize: 13, rightSide: true);
+                await Task.Delay(350).ConfigureAwait(false);
+
+                await CheckDeath();
+            }
+            else
+            {
+                UpdateVisuals();
+            }
+
 
             var pet1 = party1.First;
             var pet2 = party2.First;
 
+            // Do attacks
             pet1.Value.CurrentHealth -= pet2.Value.CurrentAttack;
             pet2.Value.CurrentHealth -= pet1.Value.CurrentAttack;
             
@@ -110,6 +67,7 @@ public static class BattleHelper
             if(pet2.Value.CurrentHealth < 0) pet2.Value.CurrentHealth = 0;
             
             
+            // Do attack animations
             var battleOrig = battle1.Location;
             battle1.Animate(new XLocationEffect(), EasingFunctions.BounceEaseOut, battle1.Location.X + 50, 400, 50, true);
             battle1.Animate(new YLocationEffect(), EasingFunctions.BounceEaseOut, battle1.Location.Y - 25, 400, 50, true);
@@ -131,55 +89,60 @@ public static class BattleHelper
                 battleOp1.Location = partyOppOrig;
             }));
             
-            
-            battler.ClearControls("battle");
-            battler.ClearControls("battleOp");
-                
-            battler.MakePets(party1.ToArray(), "battle", fontSize: 13);
-            battler.MakePets(party2.ToArray(), "battleOp", fontSize: 13, rightSide: true);
+            // Refresh the visuals
+            UpdateVisuals();
             
             await Task.Delay(250).ConfigureAwait(false);
 
-            if (pet1.Value.CurrentHealth <= 0)
-            {
-                await CheckForDeadEffects(party1.ToArray(), party1RandomThings, true);
-
-                if (party1.First.Value.CurrentHealth <= 0)
-                {
-                    party1.RemoveFirst();
-                    party1.AddLast((Pet?)null);
-                }
-            }
-            
-            if (pet2.Value.CurrentHealth <= 0)
-            {
-                await CheckForDeadEffects(party2.ToArray(), party2RandomThings, false);
-
-                if (party2.First.Value.CurrentHealth <= 0)
-                {
-                    party2.RemoveFirst();
-                    party2.AddLast((Pet?)null);
-                }
-            }
-
-            MovePetsForward(party1,party2);
-            
-            battler.ClearControls("battle");
-            battler.ClearControls("battleOp");
-                
-            battler.MakePets(party1.ToArray(), "battle", fontSize: 13);
-            battler.MakePets(party2.ToArray(), "battleOp", fontSize: 13, rightSide: true);
+            await CheckDeath();
             
             await Task.Delay(250).ConfigureAwait(false);
             
             count++;
         }
 
-        await Task.Delay(1000).ConfigureAwait(false);
+        await Task.Delay(2000).ConfigureAwait(false);
         
         battler.partyPanel.Invoke((Action)(() => battler.partyPanel.Show()));
         battler.shopPanel.Invoke((Action)(() => battler.shopPanel.Show()));
         battler.battlePanel.Invoke((Action)(() => battler.battlePanel.Hide()));
+    }
+
+    public static async Task CheckDeath()
+    {
+        await CheckForDeadEffects(party1.ToArray(), party1RandomThings, true);
+        foreach (var pet in party1.ToArray())
+        {
+            if (pet != null && pet.CurrentHealth <= 0)
+            {
+                party1.Remove(pet);
+                party1.AddLast((Pet?)null);
+            }
+        }
+            
+        await CheckForDeadEffects(party2.ToArray(), party2RandomThings, false);
+        foreach (var pet in party2.ToArray())
+        {
+            if (pet != null && pet.CurrentHealth <= 0)
+            {
+                party2.Remove(pet);
+                party2.AddLast((Pet?)null);
+            }
+        }
+
+        MovePetsForward(party1,party2);
+            
+        UpdateVisuals();
+    }
+
+    public static void UpdateVisuals()
+    {
+        var battler = Battler.instance;
+        // battler.ClearControls("battle");
+        // battler.ClearControls("battleOp");
+                
+        battler.MakePets(party1.ToArray(), "battle", fontSize: 13);
+        battler.MakePets(party2.ToArray(), "battleOp", fontSize: 13, rightSide: true);
     }
 
     public static async void AnimateDamageText(Battler battler, int damageParty1, int damageParty2)
@@ -223,6 +186,11 @@ public static class BattleHelper
 
     public static async Task AnimateEffectImage(int pet1Index, int pet2Index, bool pet1OurParty, bool pet2OurParty, string unicode)
     {
+        if (pet1Index == 4 && pet2Index == 4)
+        {
+            var x = 0;
+        }
+        
         var effectImage = Battler.instance.effectImage;
         pet1Index++;
         pet2Index++;
@@ -242,7 +210,7 @@ public static class BattleHelper
                     effectImage.Image = image;
                     
                     effectImage.Animate(new YLocationEffect(), EasingFunctions.Linear, effectImage.Location.Y - 50, 400, 0, true);
-                    effectImage.Animate(new XLocationEffect(), EasingFunctions.Linear, Battler.instance.Controls.Find(pet2OurParty ? "battle" + pet2Index : "battleOp" + pet2Index, true).First().Location.X, 800, 0);
+                    effectImage.Animate(new XLocationEffect(), EasingFunctions.Linear, Battler.instance.Controls.Find(pet2OurParty ? "battle" + pet2Index : "battleOp" + pet2Index, true).First().Location.X+5, 800, 0);
                 }
             ));
         
@@ -259,27 +227,30 @@ public static class BattleHelper
 
     public static async Task CheckForDeadEffects(IList<Pet?> party, IList<Battler.RandomThing?> randomThings, bool ourParty)
     {
-        var pet = party[0];
-        if (pet != null)
+        foreach (var pet in party)
         {
-            var ability = pet.Level1Ability;
-            if (ability.Trigger == Trigger.Faint && ability.TriggeredBy.Kind == "Self")
+            if (pet != null && pet.CurrentHealth <= 0)
             {
-                if (ability.Effect.Kind == "ModifyStats")
+                var ability = pet.Level1Ability;
+                if (ability.Trigger == Trigger.Faint && ability.TriggeredBy.Kind == "Self")
                 {
-                    var effect = ability.Effect;
-
-                    if (effect.Target.Kind == "RandomFriend" && randomThings.Any(t => party.IndexOf(pet) == t.petTriggerIndex && t.abilityTrigger == ability.Trigger))
+                    if (ability.Effect.Kind == "ModifyStats")
                     {
-                        var randomThing = randomThings.First(t => party.IndexOf(pet) == t.petTriggerIndex);
-                        var target = party[randomThing.petTargetIndex];
-                        if (target != null)
+                        var effect = ability.Effect;
+
+                        if (effect.Target.Kind == "RandomFriend" && randomThings.Any(t => party.IndexOf(pet) == t.petTriggerIndex && t.abilityTrigger == ability.Trigger))
                         {
-                            target.CurrentHealth += effect.HealthAmount;
-                            target.CurrentAttack += int.Parse(effect.AttackAmount);
+                            var randomThing = randomThings.First(t => party.IndexOf(pet) == t.petTriggerIndex);
+                            var target = party[randomThing.petTargetIndex];
+                            if (target != null)
+                            {
+                                target.CurrentHealth += effect.HealthAmount;
+                                target.CurrentAttack += int.Parse(effect.AttackAmount);
+                            }
+                            
+                            await AnimateEffectImage(randomThing.petTriggerIndex, randomThing.petTargetIndex, ourParty,ourParty, "1f354");
+                            UpdateVisuals();
                         }
-                        
-                        await AnimateEffectImage(randomThing.petTriggerIndex, randomThing.petTargetIndex, ourParty,ourParty, "1f354");
                     }
                 }
             }
@@ -311,6 +282,7 @@ public static class BattleHelper
                             {
                                 target.CurrentHealth -= Convert.ToInt32(effect.Amount);
                                 await AnimateEffectImage(randomThing.petTriggerIndex, randomThing.petTargetIndex, ourParty,!ourParty, "1faa8");
+                                UpdateVisuals();
                             }
                         }
                     }
@@ -342,8 +314,9 @@ public static class BattleHelper
                 party2.RemoveFirst();
             }
         }
+        UpdateVisuals();
     }
-    
+
     public static bool AreAllPetsDead(IEnumerable<Pet?> party)
     {
         return party.All(pet => pet is not { CurrentHealth: > 0 });

@@ -388,11 +388,11 @@ namespace auto_battler_frontend
         private System.Windows.Forms.Panel battleOp3;
         private System.Windows.Forms.Panel battleOp2;
 
-        private System.Windows.Forms.Panel battle1;
+        public System.Windows.Forms.Panel battle1;
         private System.Windows.Forms.Panel battle2;
         private System.Windows.Forms.Panel battle3;
         private System.Windows.Forms.Panel battle4;
-        private System.Windows.Forms.Panel battleOp1;
+        public System.Windows.Forms.Panel battleOp1;
 
         private System.Windows.Forms.Button readyButton;
 

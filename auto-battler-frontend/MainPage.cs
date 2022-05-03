@@ -39,6 +39,12 @@ namespace auto_battler_frontend
 
         private async void createRoomButton_Click(object sender, EventArgs e)
         {
+            if (client.Connected == false)
+            {
+                MessageBox.Show("You are not connected to the server.\nThe server is probably down.");
+                return;
+            }
+            
             var roomCode = RandomRoomCode(5);
             await client.EmitAsync("joinRoom", username, roomCode);
             var battler = new Battler(roomCode, username, client);
@@ -51,6 +57,12 @@ namespace auto_battler_frontend
         
         private async void joinRoomButton_Click(object sender, EventArgs e)
         {
+            if (client.Connected == false)
+            {
+                MessageBox.Show("You are not connected to the server.\nThe server is probably down.");
+                return;
+            }
+            
             var roomCode = roomIdBox.Text;
             if (roomCode.Length != 5)
             {

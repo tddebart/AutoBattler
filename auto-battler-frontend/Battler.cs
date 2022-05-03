@@ -158,7 +158,7 @@ namespace auto_battler_frontend
                 shopPanel.Invoke((Action)(() => shopPanel.Hide()));
                 battlePanel.Invoke((Action)(() => battlePanel.Show()));
 
-                BattleHelper.AnimateBattle(pets, oppPets, battle1, battleOp1, party1RandomThings, party2RandomThings, this);
+                BattleHelper.AnimateBattle(pets, oppPets, party1RandomThings, party2RandomThings);
             }
 
             client.On("battleStarted", BattleStarted);
@@ -177,10 +177,12 @@ namespace auto_battler_frontend
             {
                 var pet = pets[i - 1];
                 
+                var container = Controls.Find(controllerPrefix + i, true).First();
+                container.Invoke((Action)(() => container.Controls.Clear()));
+                
                 if(pet == null) continue;
                 
-                var container = Controls.Find(controllerPrefix + i, true).First();
-                
+
                 var label = new Label
                 {
                     Text = pet.Name + "\n\n\n" + pet.CurrentAttack + "           " + pet.CurrentHealth,
