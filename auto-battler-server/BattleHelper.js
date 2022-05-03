@@ -7,31 +7,22 @@
     let count = 0;
     
     while(!AreAllPetsDead(party1) && !AreAllPetsDead(party2) && count < 100) {
-        while (party1[0] == null) {
-            party1.shift();
-        }
-        while (party2[0] == null) {
-            party2.shift();
-        }
+        MovePetsForward(party1,party2);
         
         if (count === 0) {
             DoStartBattleEffects(party1,party2, party1randomThings);
             DoStartBattleEffects(party2,party1, party2randomThings);
         }
+
+
+        CheckDeath(party1, party2, party1randomThings, party2randomThings);
         
         // Do attacks
         party2[0].currentHealth -= party1[0].currentAttack;
         party1[0].currentHealth -= party2[0].currentAttack;
         
-        // Check if front pet died and execute ability if any
-        if(party1[0].currentHealth <= 0) {
-            CheckDeadEffects(party1, party1randomThings)
-            party1.shift();
-        }
-        if(party2[0].currentHealth <= 0) {
-            CheckDeadEffects(party2, party2randomThings)
-            party2.shift();
-        }
+        // Check if any pet died and execute ability if any
+        CheckDeath(party1, party2, party1randomThings, party2randomThings);
         
         count++;
     }
@@ -42,8 +33,12 @@
     let party2Dead = AreAllPetsDead(party2)
     
     // Log results
-    // console.log(`${user1.username}'s ${party1[0].name} has ${party1[0].currentHealth} health left.`);
-    // console.log(`${user2.username}'s ${party2[0].name} has ${party2[0].currentHealth} health left.`);
+    if (party1[0] !== undefined) {
+        console.log(`${user1.username}'s ${party1[0].name} has ${party1[0].currentHealth} health left.`);
+    }
+    if (party2[0] !== undefined) {
+        console.log(`${user2.username}'s ${party2[0].name} has ${party2[0].currentHealth} health left.`);
+    }
     
     if (party1Dead && party2Dead) {
         console.log("Its a draw!");
@@ -63,34 +58,70 @@
     
 }
 
+function CheckDeath(party1,party2,party1randomThings,party2randomThings) {
+    // Check if any pet died and execute ability if any
+    CheckDeadEffects(party1, party1randomThings)
+    for (let i = 0; i < party1.length; i++) {
+        if (party1[i] != null && party1[i].currentHealth <= 0) {
+            party1.splice(i, 1);
+        }
+    }
+
+    CheckDeadEffects(party2, party2randomThings)
+    for (let i = 0; i < party2.length; i++) {
+        if (party2[i] != null && party2[i].currentHealth <= 0) {
+            party2.splice(i, 1);
+        }
+    }
+
+    MovePetsForward(party1,party2);
+}
+
+function MovePetsForward(party1,party2) {
+    if(party1.some(p => p != null)) {
+        while (party1[0] == null) {
+            party1.shift();
+        }
+    }
+
+    if(party2.some(p => p != null)) {
+        while (party2[0] == null) {
+            party2.shift();
+        }
+    }
+}
+
 function CheckDeadEffects(party, randomThings) {
-    let pet = party[0]
-    if(pet != null) {
-        let ability = pet.level1Ability;
-        if(ability != null && ability.trigger === "Faint" && ability.triggeredBy.kind === "Self") {
-            if (ability.effect.kind === "ModifyStats") {
-                let effect = ability.effect;
-                if (effect.target.kind === "RandomFriend") {
-                    if(party.length === 1) {
-                        return;
-                    }
-                    
-                    for (let i = 0; i < effect.target.n; i++) {
-                        let randomPet = party[Math.floor(Math.random() * (party.length-1))+1];
-                        while (randomPet == null || randomPet === pet) {
-                            randomPet = party[Math.floor(Math.random() * (party.length-1))+1];
+    for (let i = 0; i < party.length; i++) {
+        let pet = party[i]
+        if(pet != null && pet.currentHealth <= 0) {
+            let ability = pet.level1Ability;
+            if(ability != null && ability.trigger === "Faint" && ability.triggeredBy.kind === "Self") {
+                if (ability.effect.kind === "ModifyStats") {
+                    let effect = ability.effect;
+                    if (effect.target.kind === "RandomFriend") {
+                        if(party.length === 1) {
+                            return;
                         }
-                        randomThings.push({
-                            petTrigger: party.indexOf(pet),
-                            petTarget: party.indexOf(randomPet),
-                            abilityTrigger: ability.trigger
-                        })
-                        ModifyStats(randomPet, effect);
+                        
+                        for (let i = 0; i < effect.target.n; i++) {
+                            let randomPet = party[Math.floor(Math.random() * (party.length-1))+1];
+                            while (randomPet == null || randomPet === pet) {
+                                randomPet = party[Math.floor(Math.random() * (party.length-1))+1];
+                            }
+                            randomThings.push({
+                                petTrigger: party.indexOf(pet),
+                                petTarget: party.indexOf(randomPet),
+                                abilityTrigger: ability.trigger
+                            })
+                            ModifyStats(randomPet, effect);
+                        }
                     }
                 }
             }
         }
     }
+    
 }
 
 function DoStartBattleEffects(party1,party2, randomThings) {

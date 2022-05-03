@@ -148,12 +148,14 @@ io.on('connection', socket => {
             
             if(opponent == null) {
                 console.log(`${user.username} is going to battle themself!`);
+                let user2 = Object.assign({}, user);
+                user2.username = user2.username + '2';
                 
-                let randomThings = SimulateBattle(user, user);
+                let randomThings = SimulateBattle(user, user2);
                 
                 socket.emit('receiveParty', JSON.stringify(user.partyPets));
                 socket.emit('battleStarted', JSON.stringify({
-                    oppPets: user.partyPets,
+                    oppPets: user2.partyPets,
                     party1RandomThings: randomThings.party1,
                     party2RandomThings: randomThings.party2
                 }));
