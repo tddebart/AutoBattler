@@ -24,7 +24,7 @@ namespace auto_battler_frontend
 
         public async void Init()
         {
-            Pets.Init();
+            // Pets.Init();
             
             client = new SocketIO("http://localhost:3000");
 

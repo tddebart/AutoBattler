@@ -60,7 +60,7 @@ public class Effect
         
         public bool UntilEndOfBattle { get; set; }
         
-        public string Pet { get; set; }
+        public Pet Pet { get; set; }
         
         public int WithAttack { get; set; }
         
@@ -157,11 +157,11 @@ public class Pet
 
     public List<Pack> Packs;
     
-    public Ability Level1Ability { get; set; }
+    public Ability? Level1Ability { get; set; }
     
-    public Ability Level2Ability { get; set; }
+    public Ability? Level2Ability { get; set; }
     
-    public Ability Level3Ability { get; set; }
+    public Ability? Level3Ability { get; set; }
     
     public List<Probability> Probabilities { get; set; }
 

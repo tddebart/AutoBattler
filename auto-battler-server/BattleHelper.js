@@ -60,16 +60,16 @@
 
 function CheckDeath(party1,party2,party1randomThings,party2randomThings) {
     // Check if any pet died and execute ability if any
-    CheckDeadEffects(party1, party1randomThings)
     for (let i = 0; i < party1.length; i++) {
-        if (party1[i] != null && party1[i].currentHealth <= 0) {
+        let shouldRemove = CheckDeadEffects(party1[i], party1, party1randomThings)
+        if (shouldRemove && party1[i] != null && party1[i].currentHealth <= 0) {
             party1.splice(i, 1);
         }
     }
 
-    CheckDeadEffects(party2, party2randomThings)
     for (let i = 0; i < party2.length; i++) {
-        if (party2[i] != null && party2[i].currentHealth <= 0) {
+        let shouldRemove = CheckDeadEffects(party2[i], party2, party2randomThings)
+        if (shouldRemove && party2[i] != null && party2[i].currentHealth <= 0) {
             party2.splice(i, 1);
         }
     }
@@ -91,37 +91,53 @@ function MovePetsForward(party1,party2) {
     }
 }
 
-function CheckDeadEffects(party, randomThings) {
-    for (let i = 0; i < party.length; i++) {
-        let pet = party[i]
-        if(pet != null && pet.currentHealth <= 0) {
-            let ability = pet.level1Ability;
-            if(ability != null && ability.trigger === "Faint" && ability.triggeredBy.kind === "Self") {
-                if (ability.effect.kind === "ModifyStats") {
-                    let effect = ability.effect;
-                    if (effect.target.kind === "RandomFriend") {
-                        if(party.length === 1) {
-                            return;
+function CheckDeadEffects(pet,party, randomThings) {
+    let shouldRemove = true;
+
+    if (pet != null && pet.currentHealth <= 0) {
+        let ability = pet.level1Ability;
+        if (ability != null && ability.trigger === "Faint" && ability.triggeredBy.kind === "Self") {
+            if (ability.effect.kind === "ModifyStats") {
+                let effect = ability.effect;
+                if (effect.target.kind === "RandomFriend") {
+                    if (party.length === 1) {
+                        return;
+                    }
+
+                    for (let i = 0; i < effect.target.n; i++) {
+                        let randomPet = party[Math.floor(Math.random() * (party.length - 1)) + 1];
+                        while (randomPet == null || randomPet === pet) {
+                            randomPet = party[Math.floor(Math.random() * (party.length - 1)) + 1];
                         }
-                        
-                        for (let i = 0; i < effect.target.n; i++) {
-                            let randomPet = party[Math.floor(Math.random() * (party.length-1))+1];
-                            while (randomPet == null || randomPet === pet) {
-                                randomPet = party[Math.floor(Math.random() * (party.length-1))+1];
-                            }
-                            randomThings.push({
-                                petTrigger: party.indexOf(pet),
-                                petTarget: party.indexOf(randomPet),
-                                abilityTrigger: ability.trigger
-                            })
-                            ModifyStats(randomPet, effect);
-                        }
+                        randomThings.push({
+                            petTrigger: party.indexOf(pet),
+                            petTarget: party.indexOf(randomPet),
+                            abilityTrigger: ability.trigger
+                        })
+                        ModifyStats(randomPet, effect);
                     }
                 }
             }
+
+            if (ability.effect.kind === "SummonPet") {
+                let effect = ability.effect;
+                if (effect.team === "Friendly") {
+                    shouldRemove = false;
+                    // Remove pet that died
+                    party.splice(party.indexOf(pet), 1);
+                    // Add new pet
+                    var newPet = effect.pet;
+                    newPet.baseAttack = effect.withAttack;
+                    newPet.baseHealth = effect.withHealth;
+                    newPet.currentHealth = newPet.baseHealth;
+                    newPet.currentAttack = newPet.baseAttack;
+                    party.unshift(effect.pet);
+                }
+            }
         }
+
+        return shouldRemove;
     }
-    
 }
 
 function DoStartBattleEffects(party1,party2, randomThings) {

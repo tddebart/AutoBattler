@@ -17,10 +17,10 @@ public static class BattleHelper
 {
     public static LinkedList<Pet?> party1;
     public static LinkedList<Pet?> party2;
-    public static IList<Battler.RandomThing?> party1RandomThings;
-    public static IList<Battler.RandomThing?> party2RandomThings;
+    public static List<Battler.RandomThing?> party1RandomThings;
+    public static List<Battler.RandomThing?> party2RandomThings;
 
-    public static async void AnimateBattle(LinkedList<Pet?> party1Arg, LinkedList<Pet?> party2Arg, IList<Battler.RandomThing?> party1RandomThingsArg, IList<Battler.RandomThing?> party2RandomThingsArg)
+    public static async void AnimateBattle(LinkedList<Pet?> party1Arg, LinkedList<Pet?> party2Arg, List<Battler.RandomThing?> party1RandomThingsArg, List<Battler.RandomThing?> party2RandomThingsArg)
     {
         var battler = Battler.instance;
         var battle1 = Battler.instance.battle1;
@@ -110,20 +110,20 @@ public static class BattleHelper
 
     public static async Task CheckDeath()
     {
-        await CheckForDeadEffects(party1.ToArray(), party1RandomThings, true);
         foreach (var pet in party1.ToArray())
         {
-            if (pet != null && pet.CurrentHealth <= 0)
+            var shouldRemove = await CheckForDeadEffects(pet,party1, party1RandomThings, true);
+            if (shouldRemove && pet != null && pet.CurrentHealth <= 0)
             {
                 party1.Remove(pet);
                 party1.AddLast((Pet?)null);
             }
         }
             
-        await CheckForDeadEffects(party2.ToArray(), party2RandomThings, false);
         foreach (var pet in party2.ToArray())
         {
-            if (pet != null && pet.CurrentHealth <= 0)
+            var shouldRemove = await CheckForDeadEffects(pet,party2, party2RandomThings, false);
+            if (shouldRemove && pet != null && pet.CurrentHealth <= 0)
             {
                 party2.Remove(pet);
                 party2.AddLast((Pet?)null);
@@ -225,38 +225,61 @@ public static class BattleHelper
         
     }
 
-    public static async Task CheckForDeadEffects(IList<Pet?> party, IList<Battler.RandomThing?> randomThings, bool ourParty)
+    public static async Task<bool> CheckForDeadEffects(Pet? pet, LinkedList<Pet?> partyLinked, List<Battler.RandomThing?> randomThings, bool ourParty)
     {
-        foreach (var pet in party)
+        var shouldRemove = true;
+        
+        var party = partyLinked.ToList();
+        if (pet != null && pet.CurrentHealth <= 0)
         {
-            if (pet != null && pet.CurrentHealth <= 0)
+            var ability = pet.Level1Ability;
+            if (ability != null && ability.Trigger == Trigger.Faint && ability.TriggeredBy.Kind == "Self")
             {
-                var ability = pet.Level1Ability;
-                if (ability.Trigger == Trigger.Faint && ability.TriggeredBy.Kind == "Self")
+                if (ability.Effect.Kind == "ModifyStats")
                 {
-                    if (ability.Effect.Kind == "ModifyStats")
-                    {
-                        var effect = ability.Effect;
+                    var effect = ability.Effect;
 
-                        if (effect.Target.Kind == "RandomFriend" && randomThings.Any(t => party.IndexOf(pet) == t.petTriggerIndex && t.abilityTrigger == ability.Trigger))
+                    if (effect.Target.Kind == "RandomFriend" && randomThings.Any(t => party.IndexOf(pet) == t.petTriggerIndex && t.abilityTrigger == ability.Trigger))
+                    {
+                        var randomThing = randomThings.First(t => party.IndexOf(pet) == t.petTriggerIndex);
+                        var target = party[randomThing.petTargetIndex];
+                        if (target != null)
                         {
-                            var randomThing = randomThings.First(t => party.IndexOf(pet) == t.petTriggerIndex);
-                            var target = party[randomThing.petTargetIndex];
-                            if (target != null)
-                            {
-                                target.CurrentHealth += effect.HealthAmount;
-                                target.CurrentAttack += int.Parse(effect.AttackAmount);
-                            }
-                            
-                            await AnimateEffectImage(randomThing.petTriggerIndex, randomThing.petTargetIndex, ourParty,ourParty, "1f354");
-                            UpdateVisuals();
+                            target.CurrentHealth += effect.HealthAmount;
+                            target.CurrentAttack += int.Parse(effect.AttackAmount);
                         }
+                        
+                        await AnimateEffectImage(randomThing.petTriggerIndex, randomThing.petTargetIndex, ourParty,ourParty, "1f354");
+                        randomThings.Remove(randomThing);
+                        UpdateVisuals();
+                        await Task.Delay(200).ConfigureAwait(false);
+                    }
+                }
+
+                if (ability.Effect.Kind == "SummonPet")
+                {
+                    var effect = ability.Effect;
+                    if (effect.Team == "Friendly")
+                    {
+                        shouldRemove = false;
+                        // Remove the pet that died from the party
+                        // Add a new pet to the party
+                        var newPet = effect.Pet;
+                        newPet.CurrentAttack = effect.WithAttack;
+                        newPet.CurrentHealth = effect.WithHealth;
+                        var petNode = partyLinked.Find(pet);
+                        partyLinked.AddBefore(petNode,newPet);
+                        partyLinked.Remove(pet);
+                        
+                        UpdateVisuals();
+                        
+                        await Task.Delay(200).ConfigureAwait(false);
                     }
                 }
             }
         }
-        
-        await Task.Delay(200).ConfigureAwait(false);
+
+        return shouldRemove;
     }
     
     public static async Task DoStartBattleEffects(IList<Pet?> party1,IList<Pet?> party2, IList<Battler.RandomThing?> randomThings, bool ourParty)
@@ -282,6 +305,7 @@ public static class BattleHelper
                             {
                                 target.CurrentHealth -= Convert.ToInt32(effect.Amount);
                                 await AnimateEffectImage(randomThing.petTriggerIndex, randomThing.petTargetIndex, ourParty,!ourParty, "1faa8");
+                                randomThings.Remove(randomThing);
                                 UpdateVisuals();
                             }
                         }

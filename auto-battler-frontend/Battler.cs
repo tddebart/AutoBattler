@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -135,8 +136,8 @@ namespace auto_battler_frontend
                 
                 var oppPetsArr = (info as JObject).GetValue("oppPets").ToArray().Select(p => p.ToObject<Pet?>()).ToArray();
                 
-                var party1RandomThings = (info as JObject).GetValue("party1RandomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToArray();
-                var party2RandomThings = (info as JObject).GetValue("party2RandomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToArray();
+                var party1RandomThings = (info as JObject).GetValue("party1RandomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
+                var party2RandomThings = (info as JObject).GetValue("party2RandomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
                 
 
                 if (oppPetsArr == null) return;
@@ -185,7 +186,7 @@ namespace auto_battler_frontend
 
                 var label = new Label
                 {
-                    Text = pet.Name + "\n\n\n" + pet.CurrentAttack + "           " + pet.CurrentHealth,
+                    Text = pet.Name + (pet.Name.Length < 9 ? "\n\n\n": "\n\n") + pet.CurrentAttack + "           " + pet.CurrentHealth,
                     TextAlign = ContentAlignment.BottomCenter,
                     Size = container.Size,
                     Location = new Point(0, 0),
