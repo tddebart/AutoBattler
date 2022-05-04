@@ -37,6 +37,7 @@ namespace auto_battler_frontend
             this.party3 = new System.Windows.Forms.Panel();
             this.party2 = new System.Windows.Forms.Panel();
             this.party1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.shop5 = new System.Windows.Forms.Panel();
             this.shop4 = new System.Windows.Forms.Panel();
             this.shop3 = new System.Windows.Forms.Panel();
@@ -60,7 +61,9 @@ namespace auto_battler_frontend
             this.party1DamageText = new System.Windows.Forms.Label();
             this.party2DamageText = new System.Windows.Forms.Label();
             this.partyPanel = new System.Windows.Forms.Panel();
+            this.coinText = new System.Windows.Forms.Label();
             this.shopPanel = new System.Windows.Forms.Panel();
+            this.party1.SuspendLayout();
             this.battlePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.effectImage)).BeginInit();
             this.partyPanel.SuspendLayout();
@@ -80,7 +83,7 @@ namespace auto_battler_frontend
             // party5
             // 
             this.party5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.party5.Location = new System.Drawing.Point(13, 9);
+            this.party5.Location = new System.Drawing.Point(10, 130);
             this.party5.Name = "party5";
             this.party5.Size = new System.Drawing.Size(150, 150);
             this.party5.TabIndex = 2;
@@ -88,7 +91,7 @@ namespace auto_battler_frontend
             // party4
             // 
             this.party4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.party4.Location = new System.Drawing.Point(169, 9);
+            this.party4.Location = new System.Drawing.Point(166, 130);
             this.party4.Name = "party4";
             this.party4.Size = new System.Drawing.Size(150, 150);
             this.party4.TabIndex = 3;
@@ -96,7 +99,7 @@ namespace auto_battler_frontend
             // party3
             // 
             this.party3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.party3.Location = new System.Drawing.Point(325, 9);
+            this.party3.Location = new System.Drawing.Point(322, 130);
             this.party3.Name = "party3";
             this.party3.Size = new System.Drawing.Size(150, 150);
             this.party3.TabIndex = 4;
@@ -104,7 +107,7 @@ namespace auto_battler_frontend
             // party2
             // 
             this.party2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.party2.Location = new System.Drawing.Point(481, 9);
+            this.party2.Location = new System.Drawing.Point(478, 130);
             this.party2.Name = "party2";
             this.party2.Size = new System.Drawing.Size(150, 150);
             this.party2.TabIndex = 5;
@@ -112,10 +115,18 @@ namespace auto_battler_frontend
             // party1
             // 
             this.party1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.party1.Location = new System.Drawing.Point(637, 9);
+            this.party1.Controls.Add(this.label1);
+            this.party1.Location = new System.Drawing.Point(634, 130);
             this.party1.Name = "party1";
             this.party1.Size = new System.Drawing.Size(150, 150);
             this.party1.TabIndex = 6;
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(100, 23);
+            this.label1.TabIndex = 0;
             // 
             // shop5
             // 
@@ -190,7 +201,7 @@ namespace auto_battler_frontend
             // battle1
             // 
             this.battle1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle1.Location = new System.Drawing.Point(583, 153);
+            this.battle1.Location = new System.Drawing.Point(581, 236);
             this.battle1.Name = "battle1";
             this.battle1.Size = new System.Drawing.Size(125, 125);
             this.battle1.TabIndex = 11;
@@ -198,7 +209,7 @@ namespace auto_battler_frontend
             // battle2
             // 
             this.battle2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle2.Location = new System.Drawing.Point(452, 153);
+            this.battle2.Location = new System.Drawing.Point(450, 236);
             this.battle2.Name = "battle2";
             this.battle2.Size = new System.Drawing.Size(125, 125);
             this.battle2.TabIndex = 10;
@@ -206,7 +217,7 @@ namespace auto_battler_frontend
             // battle3
             // 
             this.battle3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle3.Location = new System.Drawing.Point(321, 153);
+            this.battle3.Location = new System.Drawing.Point(319, 236);
             this.battle3.Name = "battle3";
             this.battle3.Size = new System.Drawing.Size(125, 125);
             this.battle3.TabIndex = 9;
@@ -214,7 +225,7 @@ namespace auto_battler_frontend
             // battle4
             // 
             this.battle4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle4.Location = new System.Drawing.Point(190, 153);
+            this.battle4.Location = new System.Drawing.Point(188, 236);
             this.battle4.Name = "battle4";
             this.battle4.Size = new System.Drawing.Size(125, 125);
             this.battle4.TabIndex = 8;
@@ -222,7 +233,7 @@ namespace auto_battler_frontend
             // battle5
             // 
             this.battle5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battle5.Location = new System.Drawing.Point(59, 153);
+            this.battle5.Location = new System.Drawing.Point(57, 236);
             this.battle5.Name = "battle5";
             this.battle5.Size = new System.Drawing.Size(125, 125);
             this.battle5.TabIndex = 7;
@@ -230,7 +241,7 @@ namespace auto_battler_frontend
             // battleOp5
             // 
             this.battleOp5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp5.Location = new System.Drawing.Point(1314, 153);
+            this.battleOp5.Location = new System.Drawing.Point(1312, 236);
             this.battleOp5.Name = "battleOp5";
             this.battleOp5.Size = new System.Drawing.Size(125, 125);
             this.battleOp5.TabIndex = 16;
@@ -238,7 +249,7 @@ namespace auto_battler_frontend
             // battleOp4
             // 
             this.battleOp4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp4.Location = new System.Drawing.Point(1183, 153);
+            this.battleOp4.Location = new System.Drawing.Point(1181, 236);
             this.battleOp4.Name = "battleOp4";
             this.battleOp4.Size = new System.Drawing.Size(125, 125);
             this.battleOp4.TabIndex = 15;
@@ -246,7 +257,7 @@ namespace auto_battler_frontend
             // battleOp3
             // 
             this.battleOp3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp3.Location = new System.Drawing.Point(1052, 153);
+            this.battleOp3.Location = new System.Drawing.Point(1050, 236);
             this.battleOp3.Name = "battleOp3";
             this.battleOp3.Size = new System.Drawing.Size(125, 125);
             this.battleOp3.TabIndex = 14;
@@ -254,7 +265,7 @@ namespace auto_battler_frontend
             // battleOp2
             // 
             this.battleOp2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp2.Location = new System.Drawing.Point(921, 153);
+            this.battleOp2.Location = new System.Drawing.Point(919, 236);
             this.battleOp2.Name = "battleOp2";
             this.battleOp2.Size = new System.Drawing.Size(125, 125);
             this.battleOp2.TabIndex = 13;
@@ -262,7 +273,7 @@ namespace auto_battler_frontend
             // battleOp1
             // 
             this.battleOp1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.battleOp1.Location = new System.Drawing.Point(790, 153);
+            this.battleOp1.Location = new System.Drawing.Point(788, 236);
             this.battleOp1.Name = "battleOp1";
             this.battleOp1.Size = new System.Drawing.Size(125, 125);
             this.battleOp1.TabIndex = 12;
@@ -282,9 +293,9 @@ namespace auto_battler_frontend
             this.battlePanel.Controls.Add(this.battle3);
             this.battlePanel.Controls.Add(this.battle4);
             this.battlePanel.Controls.Add(this.battle5);
-            this.battlePanel.Location = new System.Drawing.Point(66, 180);
+            this.battlePanel.Location = new System.Drawing.Point(66, 104);
             this.battlePanel.Name = "battlePanel";
-            this.battlePanel.Size = new System.Drawing.Size(1491, 310);
+            this.battlePanel.Size = new System.Drawing.Size(1491, 386);
             this.battlePanel.TabIndex = 17;
             this.battlePanel.Visible = false;
             // 
@@ -292,7 +303,7 @@ namespace auto_battler_frontend
             // 
             this.effectImage.BackColor = System.Drawing.Color.Transparent;
             this.effectImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.effectImage.Location = new System.Drawing.Point(827, 55);
+            this.effectImage.Location = new System.Drawing.Point(825, 138);
             this.effectImage.Name = "effectImage";
             this.effectImage.Size = new System.Drawing.Size(75, 75);
             this.effectImage.TabIndex = 23;
@@ -304,7 +315,7 @@ namespace auto_battler_frontend
             this.party1DamageText.BackColor = System.Drawing.Color.Transparent;
             this.party1DamageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.party1DamageText.ForeColor = System.Drawing.Color.Red;
-            this.party1DamageText.Location = new System.Drawing.Point(674, 175);
+            this.party1DamageText.Location = new System.Drawing.Point(672, 258);
             this.party1DamageText.Name = "party1DamageText";
             this.party1DamageText.Size = new System.Drawing.Size(62, 45);
             this.party1DamageText.TabIndex = 21;
@@ -317,7 +328,7 @@ namespace auto_battler_frontend
             this.party2DamageText.BackColor = System.Drawing.Color.Transparent;
             this.party2DamageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.party2DamageText.ForeColor = System.Drawing.Color.Red;
-            this.party2DamageText.Location = new System.Drawing.Point(755, 175);
+            this.party2DamageText.Location = new System.Drawing.Point(753, 258);
             this.party2DamageText.Name = "party2DamageText";
             this.party2DamageText.Size = new System.Drawing.Size(62, 45);
             this.party2DamageText.TabIndex = 22;
@@ -327,15 +338,25 @@ namespace auto_battler_frontend
             // 
             // partyPanel
             // 
+            this.partyPanel.Controls.Add(this.coinText);
             this.partyPanel.Controls.Add(this.party1);
             this.partyPanel.Controls.Add(this.party2);
             this.partyPanel.Controls.Add(this.party3);
             this.partyPanel.Controls.Add(this.party4);
             this.partyPanel.Controls.Add(this.party5);
-            this.partyPanel.Location = new System.Drawing.Point(12, 123);
+            this.partyPanel.Location = new System.Drawing.Point(12, 2);
             this.partyPanel.Name = "partyPanel";
-            this.partyPanel.Size = new System.Drawing.Size(795, 173);
+            this.partyPanel.Size = new System.Drawing.Size(795, 294);
             this.partyPanel.TabIndex = 18;
+            // 
+            // coinText
+            // 
+            this.coinText.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.coinText.Location = new System.Drawing.Point(10, 7);
+            this.coinText.Name = "coinText";
+            this.coinText.Size = new System.Drawing.Size(228, 52);
+            this.coinText.TabIndex = 20;
+            this.coinText.Text = "Coins: 10";
             // 
             // shopPanel
             // 
@@ -364,12 +385,17 @@ namespace auto_battler_frontend
             this.Name = "Battler";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Battler";
+            this.party1.ResumeLayout(false);
             this.battlePanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.effectImage)).EndInit();
             this.partyPanel.ResumeLayout(false);
             this.shopPanel.ResumeLayout(false);
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.Label label1;
+
+        public System.Windows.Forms.Label coinText;
 
         public System.Windows.Forms.PictureBox effectImage;
 

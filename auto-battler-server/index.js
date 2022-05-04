@@ -21,6 +21,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+let disableCoins = false;
+
 // this block will run when the client connects
 io.on('connection', socket => {
     Init();
@@ -46,29 +48,13 @@ io.on('connection', socket => {
 
         socket.join(user.room);
 
-        // General welcome
-        // socket.emit('message', formatMessage("SERVER", 'Messages are limited to this room! '));
-
-        // Broadcast everytime users connects
-        // socket.broadcast
-        //     .to(user.room)
-        //     .emit(
-        //         'message', formatMessage("SERVER", `${user.username} has joined the room`)
-        //     );
-
-        // Current active users and room name
-        // io.to(user.room).emit('roomUsers', {
-        //     room: user.room,
-        //     users: getIndividualRoomUsers(user.room)
-        // });
-
         console.log(`${user.username} has joined the room ${user.room}`);
     });
     
     socket.on("getShop", () => {
         const user = getUser(socket.id);
         
-        if (user) {
+        if (user && user.coins >= 1) {
             let pets = [];
             
             for (let i = 0; i < 5; i++) {
@@ -78,6 +64,7 @@ io.on('connection', socket => {
             console.log('Send shop: ' + pets.map(p => p.name) + ' to ' + user.username);
             
             user.shopPets = pets;
+            user.coins -= 1;
             
             socket.emit('receiveShop', JSON.stringify(pets));
         }
@@ -86,11 +73,12 @@ io.on('connection', socket => {
     socket.on('buyPet', (shopIndex, partyIndex) => {
         const user = getUser(socket.id);
         
-        if (user && user.shopPets[shopIndex] != null) {
+        if (user && user.shopPets[shopIndex] != null && user.coins >= 3) {
             console.log(`${user.username} bought ${user.shopPets[shopIndex].name}`);
             
             user.partyPets[partyIndex] = user.shopPets[shopIndex];
             user.shopPets[shopIndex] = null;
+            user.coins -= 3;
             
             socket.emit('receiveParty', JSON.stringify(user.partyPets));
             socket.emit('receiveShop', JSON.stringify(user.shopPets));
@@ -143,7 +131,9 @@ io.on('connection', socket => {
                 
                 
                 user.ready = false;
+                user.coins = 13;
                 opponent.ready = false;
+                opponent.coins = 13;
             }
             
             if(opponent == null) {
@@ -161,18 +151,15 @@ io.on('connection', socket => {
                 }));
                 
                 user.ready = false;
+                
+                user.coins = 13;
             }
         }
     });
     
-    
-
-    // Listen for client message
-    socket.on('attackMessage', msg => {
-        const user = getUser(socket.id);
-
-        console.log(`${user.username} has attacked ${msg.target}`);
-        // io.to(user.room).emit('message', formatMessage(user.username, msg));
+    socket.on('disableCoins', () => {
+        disableCoins = true; 
+        console.log('Coins disabled');
     });
 
     // Runs when client disconnects
@@ -180,11 +167,6 @@ io.on('connection', socket => {
         const user = exitRoom(socket.id);
 
         if (user) {
-            // io.to(user.room).emit(
-            //     'message',
-            //     formatMessage("SERVER", `${user.username} has left the room`)
-            // );
-
             // Current active users and room name
             io.to(user.room).emit('roomUsers', {
                 room: user.room,

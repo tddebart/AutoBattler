@@ -37,6 +37,7 @@ class User {
     this.opponent = null;
     this.shopPets = [];
     this.partyPets = [];
+    this.coins = 13;
   }
 }
 

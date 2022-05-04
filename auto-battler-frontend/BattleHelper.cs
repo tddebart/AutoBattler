@@ -102,6 +102,13 @@ public static class BattleHelper
         }
 
         await Task.Delay(2000).ConfigureAwait(false);
+
+        await battler.client.EmitAsync("getShop");
+        battler.coins = 10;
+        battler.coinText.Invoke((Action)(() =>
+        {
+            battler.coinText.Text = $"Coins: {battler.coins}";
+        }));
         
         battler.partyPanel.Invoke((Action)(() => battler.partyPanel.Show()));
         battler.shopPanel.Invoke((Action)(() => battler.shopPanel.Show()));
@@ -209,12 +216,12 @@ public static class BattleHelper
                     image = new Bitmap(image, new Size(effectImage.Size.Width, effectImage.Size.Height));
                     effectImage.Image = image;
                     
-                    effectImage.Animate(new YLocationEffect(), EasingFunctions.Linear, effectImage.Location.Y - 50, 400, 0, true);
+                    effectImage.Animate(new YLocationEffect(), EasingFunctions.Linear, effectImage.Location.Y - 75, 400, 0, true);
                     effectImage.Animate(new XLocationEffect(), EasingFunctions.Linear, Battler.instance.Controls.Find(pet2OurParty ? "battle" + pet2Index : "battleOp" + pet2Index, true).First().Location.X+5, 800, 0);
                 }
             ));
         
-        await Task.Delay(810).ConfigureAwait(false);
+        await Task.Delay(830).ConfigureAwait(false);
         
         effectImage.Invoke((Action)(() =>
                 {
@@ -222,7 +229,6 @@ public static class BattleHelper
                     effectImage.Visible = false;
                 }
             ));
-        
     }
 
     public static async Task<bool> CheckForDeadEffects(Pet? pet, LinkedList<Pet?> partyLinked, List<Battler.RandomThing?> randomThings, bool ourParty)
@@ -343,6 +349,7 @@ public static class BattleHelper
                                 await AnimateEffectImage(randomThing.petTriggerIndex, randomThing.petTargetIndex, ourParty,!ourParty, "1faa8");
                                 randomThings.Remove(randomThing);
                                 UpdateVisuals();
+                                await Task.Delay(200).ConfigureAwait(false);
                             }
                         }
                     }

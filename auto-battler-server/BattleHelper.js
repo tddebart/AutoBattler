@@ -33,10 +33,10 @@
     let party2Dead = AreAllPetsDead(party2)
     
     // Log results
-    if (party1[0] !== undefined) {
+    if (party1[0] !== undefined && party1[0] !== null) {
         console.log(`${user1.username}'s ${party1[0].name} has ${party1[0].currentHealth} health left.`);
     }
-    if (party2[0] !== undefined) {
+    if (party2[0] !== undefined && party2[0] !== null) {
         console.log(`${user2.username}'s ${party2[0].name} has ${party2[0].currentHealth} health left.`);
     }
     
@@ -106,7 +106,7 @@ function CheckDeadEffects(pet,party, randomThings) {
 
                     for (let i = 0; i < effect.target.n; i++) {
                         let randomPet = party[Math.floor(Math.random() * (party.length - 1)) + 1];
-                        while (randomPet == null || randomPet === pet) {
+                        while (randomPet == null || randomPet === pet || randomPet.currentHealth <= 0) {
                             randomPet = party[Math.floor(Math.random() * (party.length - 1)) + 1];
                         }
                         randomThings.push({
@@ -175,7 +175,7 @@ function DoStartBattleEffects(party1,party2, randomThings) {
                     if (effect.target.kind === "RandomEnemy") {
                         for (let j = 0; j < effect.target.n; j++) {
                             let randomPet = party2[Math.floor(Math.random() * (party2.length))];
-                            while (randomPet == null) {
+                            while (randomPet == null || randomPet.currentHealth <= 0) {
                                 randomPet = party2[Math.floor(Math.random() * (party2.length))];
                             }
                             

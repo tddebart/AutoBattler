@@ -38,6 +38,7 @@ namespace auto_battler_frontend
             this.roomIdBox = new System.Windows.Forms.TextBox();
             this.joinRoomButton = new System.Windows.Forms.Button();
             this.userNameLabel = new System.Windows.Forms.Label();
+            this.disableCoinsButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -111,11 +112,23 @@ namespace auto_battler_frontend
             this.userNameLabel.Text = "userName";
             this.userNameLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // disableCoinsButton
+            // 
+            this.disableCoinsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.disableCoinsButton.Location = new System.Drawing.Point(1320, 742);
+            this.disableCoinsButton.Name = "disableCoinsButton";
+            this.disableCoinsButton.Size = new System.Drawing.Size(230, 89);
+            this.disableCoinsButton.TabIndex = 10;
+            this.disableCoinsButton.Text = "DisableCoins";
+            this.disableCoinsButton.UseVisualStyleBackColor = true;
+            this.disableCoinsButton.Click += new System.EventHandler(this.disableCoinsButton_Click);
+            // 
             // MainPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1582, 853);
+            this.Controls.Add(this.disableCoinsButton);
             this.Controls.Add(this.userNameLabel);
             this.Controls.Add(this.joinRoomButton);
             this.Controls.Add(this.roomIdBox);
@@ -129,6 +142,8 @@ namespace auto_battler_frontend
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Button disableCoinsButton;
 
         private System.Windows.Forms.Label userNameLabel;
 

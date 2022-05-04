@@ -30,17 +30,18 @@ namespace auto_battler_frontend
         public SocketIO client;
         public static Inspector inspector;
 
-        public int selectedShopIndex;
+        public int selectedShopIndex = -1;
         public int selectedPartyIndex = -1;
         
-        public Pet[] shopPets = new Pet[5];
-        public Pet[] partyPets = new Pet[5];
+        public Pet?[] shopPets = new Pet[5];
+        public Pet?[] partyPets = new Pet[5];
+
+        public int coins = 10;
 
         public static Battler instance;
         
         
-        //TODO: Animations.
-        // Example:
+        // Animation Example:
         // var origPos = petContainer.Location;
         // petContainer.Animate(new XLocationEffect(), EasingFunctions.Linear, petContainer.Location.X + 100, 500, 50, true);
         // Task.Delay(1100).ContinueWith(_ =>
@@ -249,16 +250,26 @@ namespace auto_battler_frontend
                 var petContainer = Controls.Find("party" + i, true).First();
 
                 var index = i;
-                petContainer.Click += (sender, args) =>
+                petContainer.Click += async(sender, args) =>
                 {
-                    if (selectedPartyIndex == -1)
+                    if (selectedPartyIndex == -1 && selectedShopIndex != -1 &&shopPets[selectedShopIndex] != null)
                     {
-                        client.EmitAsync("buyPet", selectedShopIndex, index-1);
+                        if (coins < 3 && !MainPage.disableCoins)
+                        {
+                            coinText.ForeColor = Color.Red;
+                            await Task.Delay(350).ConfigureAwait(false);
+                            coinText.ForeColor = Color.Black;
+                            return;
+                        }
+                        
+                        await client.EmitAsync("buyPet", selectedShopIndex, index-1);
+                        coins -= 3;
+                        coinText.Text = $"Coins: {coins}";
                         selectedShopIndex = -1;
                     }
                     else
                     {
-                        client.EmitAsync("swapPet", selectedPartyIndex, index-1);
+                        await client.EmitAsync("swapPet", selectedPartyIndex, index-1);
                         selectedPartyIndex = -1;
                     }
                 };
@@ -271,9 +282,19 @@ namespace auto_battler_frontend
             client.EmitAsync("disconnect");
         }
 
-        private void rollButton_Click(object sender, EventArgs e)
+        private async void rollButton_Click(object sender, EventArgs e)
         {
+            if (coins < 1 && !MainPage.disableCoins)
+            {
+                coinText.ForeColor = Color.Red;
+                await Task.Delay(350).ConfigureAwait(false);
+                coinText.ForeColor = Color.Black;
+                return;
+            }
+            
             client.EmitAsync("getShop");
+            coins -= 1;
+            coinText.Text = $"Coins: {coins}";
         }
 
         public async Task ClearControls(string controlPrefix)

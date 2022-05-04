@@ -11,6 +11,8 @@ namespace auto_battler_frontend
         public SocketIO client;
         public string username;
         
+        public static bool disableCoins = false;
+        
         private static readonly Random random = new Random();
         
         public MainPage(string userName)
@@ -52,7 +54,14 @@ namespace auto_battler_frontend
             battler.StartPosition = FormStartPosition.Manual;
             battler.FormClosing += delegate { this.Show(); };
             this.Hide();
-            battler.ShowDialog();
+            try
+            {
+                battler.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
         
         private async void joinRoomButton_Click(object sender, EventArgs e)
@@ -85,5 +94,10 @@ namespace auto_battler_frontend
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
+        private void disableCoinsButton_Click(object sender, EventArgs e)
+        {
+            client.EmitAsync("disableCoins");
+            disableCoins = true;
+        }
     }
 }
