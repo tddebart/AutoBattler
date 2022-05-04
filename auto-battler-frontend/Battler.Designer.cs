@@ -292,7 +292,7 @@ namespace auto_battler_frontend
             // 
             this.effectImage.BackColor = System.Drawing.Color.Transparent;
             this.effectImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.effectImage.Location = new System.Drawing.Point(609, 63);
+            this.effectImage.Location = new System.Drawing.Point(827, 55);
             this.effectImage.Name = "effectImage";
             this.effectImage.Size = new System.Drawing.Size(75, 75);
             this.effectImage.TabIndex = 23;
@@ -332,7 +332,7 @@ namespace auto_battler_frontend
             this.partyPanel.Controls.Add(this.party3);
             this.partyPanel.Controls.Add(this.party4);
             this.partyPanel.Controls.Add(this.party5);
-            this.partyPanel.Location = new System.Drawing.Point(12, 52);
+            this.partyPanel.Location = new System.Drawing.Point(12, 123);
             this.partyPanel.Name = "partyPanel";
             this.partyPanel.Size = new System.Drawing.Size(795, 173);
             this.partyPanel.TabIndex = 18;

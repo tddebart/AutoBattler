@@ -126,17 +126,40 @@ function CheckDeadEffects(pet,party, randomThings) {
                     // Remove pet that died
                     party.splice(party.indexOf(pet), 1);
                     // Add new pet
-                    var newPet = effect.pet;
+                    let newPet = effect.pet;
                     newPet.baseAttack = effect.withAttack;
                     newPet.baseHealth = effect.withHealth;
                     newPet.currentHealth = newPet.baseHealth;
                     newPet.currentAttack = newPet.baseAttack;
-                    party.unshift(effect.pet);
+                    party.unshift(newPet);
+                    CheckSummonedEffect(newPet,party)
                 }
             }
         }
 
         return shouldRemove;
+    }
+}
+
+function CheckSummonedEffect(pet,party) {
+    for (let i = 0; i < party.length; i++) {
+        if (party[i] != null) {
+            let ability = party[i].level1Ability;
+            
+            if (ability != null && ability.trigger === "Summoned") {
+                if (ability.effect.kind === "ModifyStats") {
+                    let effect = ability.effect;
+                    if(effect.target.kind === "TriggeringEntity") {
+                        if(effect.attackAmount != undefined) {
+                            pet.currentAttack += effect.attackAmount;
+                        }
+                        if(effect.healthAmount != undefined) {
+                            pet.currentHealth += effect.healthAmount;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -274,12 +274,48 @@ public static class BattleHelper
                         UpdateVisuals();
                         
                         await Task.Delay(200).ConfigureAwait(false);
+                        await CheckSummonedEffect(newPet, partyLinked, ourParty);
                     }
                 }
             }
         }
 
         return shouldRemove;
+    }
+
+    public static async Task CheckSummonedEffect(Pet summonedPet, LinkedList<Pet?> partyLinked, bool ourParty)
+    {
+        var party = partyLinked.ToList();
+        foreach (var pet in partyLinked)
+        {
+            if (pet != null)
+            {
+                var ability = pet.Level1Ability;
+                if (ability != null && ability.Trigger == Trigger.Summoned)
+                {
+                    if (ability.Effect.Kind == "ModifyStats")
+                    {
+                        var effect = ability.Effect;
+                        if (effect.Target.Kind == "TriggeringEntity")
+                        {
+                            if (!string.IsNullOrEmpty(effect.AttackAmount))
+                            {
+                                summonedPet.CurrentAttack += int.Parse(effect.AttackAmount);
+                            }
+                            
+                            if (effect.HealthAmount != 0)
+                            {
+                                summonedPet.CurrentHealth += effect.HealthAmount;
+                            }
+                            
+                            await AnimateEffectImage(party.IndexOf(pet), party.IndexOf(summonedPet), ourParty, ourParty, "1f354");
+                            UpdateVisuals();
+                            await Task.Delay(200).ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+        }
     }
     
     public static async Task DoStartBattleEffects(IList<Pet?> party1,IList<Pet?> party2, IList<Battler.RandomThing?> randomThings, bool ourParty)
