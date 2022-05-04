@@ -238,7 +238,7 @@ public static class BattleHelper
         var party = partyLinked.ToList();
         if (pet != null && pet.CurrentHealth <= 0)
         {
-            var ability = pet.Level1Ability;
+            var ability = pet.Ability;
             if (ability != null && ability.Trigger == Trigger.Faint && ability.TriggeredBy.Kind == "Self")
             {
                 if (ability.Effect.Kind == "ModifyStats")
@@ -296,7 +296,7 @@ public static class BattleHelper
         {
             if (pet != null)
             {
-                var ability = pet.Level1Ability;
+                var ability = pet.Ability;
                 if (ability != null && ability.Trigger == Trigger.Summoned)
                 {
                     if (ability.Effect.Kind == "ModifyStats")
@@ -330,7 +330,7 @@ public static class BattleHelper
         {
             if (pet == null) continue;
 
-            var ability = pet.Level1Ability;
+            var ability = pet.Ability;
 
             if (ability.Trigger == Trigger.StartOfBattle)
             {

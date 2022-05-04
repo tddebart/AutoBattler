@@ -206,10 +206,29 @@ namespace auto_battler_frontend
                         labelClickEvent.Invoke(label, index);
                     };
                 }
-
-                label.MouseEnter += (_, _) =>
+                
+                label.MouseEnter += (_,_) =>
                 {
-                    hoverInfo.Text = $"{pet.Name}\n{pet.Level1Ability.Description}";
+                    petHoverInfo.Visible = true;
+                };
+
+                label.MouseMove += (_, eventArgs) =>
+                {
+                    var point = PointToClient(label.PointToScreen(label.Location));
+                    
+                    point.Offset(-petHoverInfo.Width/2, -petHoverInfo.Height/2 - 150);
+                    point.Offset(label.Width/2, label.Height/2);
+                    
+                    petHoverInfo.Location = point;
+                    
+                    petHoverInfo.nameLabel.Text = pet.Name;
+                    petHoverInfo.tierLabel.Text = $"Tier {pet.Tier}";
+                    petHoverInfo.descriptionLabel.Text = pet.Ability.Description;
+                };
+                
+                label.MouseLeave += (_, _) =>
+                {
+                    petHoverInfo.Visible = false;
                 };
 
                 void Action()

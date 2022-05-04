@@ -157,12 +157,26 @@ public class Pet
 
     public List<Pack> Packs;
     
-    public Ability? Level1Ability { get; set; }
+    public Ability? Level1Ability { private get; set; }
     
-    public Ability? Level2Ability { get; set; }
-    
-    public Ability? Level3Ability { get; set; }
-    
+    public Ability? Level2Ability { private get; set; }
+                                     
+    public Ability? Level3Ability { private get; set; }
+
+    public Ability? Ability
+    {
+        get
+        {
+            return Tier switch
+            {
+                "1" => Level1Ability,
+                "2" => Level2Ability,
+                "3" => Level3Ability,
+                _ => Level1Ability
+            };
+        }
+    }
+
     public List<Probability> Probabilities { get; set; }
 
     public Pet()

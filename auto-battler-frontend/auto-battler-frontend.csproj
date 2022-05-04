@@ -48,6 +48,9 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="pokemon_frontend">
+      <HintPath>bin\Debug\pokemon_frontend.exe</HintPath>
+    </Reference>
     <Reference Include="SocketIOClient, Version=3.0.6.0, Culture=neutral, PublicKeyToken=c9a3629195a82104, processorArchitecture=MSIL">
       <HintPath>packages\SocketIOClient.3.0.6\lib\netstandard2.0\SocketIOClient.dll</HintPath>
     </Reference>
@@ -108,6 +111,12 @@
     <Compile Include="MainPage.Designer.cs">
       <DependentUpon>MainPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="PetHoverInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PetHoverInfo.Designer.cs">
+      <DependentUpon>PetHoverInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Pets.cs" />
     <Compile Include="StartPage.cs">
       <SubType>Form</SubType>
@@ -122,6 +131,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainPage.resx">
       <DependentUpon>MainPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PetHoverInfo.resx">
+      <DependentUpon>PetHoverInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

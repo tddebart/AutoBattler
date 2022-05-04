@@ -44,7 +44,6 @@ namespace auto_battler_frontend
             this.shop2 = new System.Windows.Forms.Panel();
             this.shop1 = new System.Windows.Forms.Panel();
             this.rollButton = new System.Windows.Forms.Button();
-            this.hoverInfo = new System.Windows.Forms.Label();
             this.readyButton = new System.Windows.Forms.Button();
             this.battle1 = new System.Windows.Forms.Panel();
             this.battle2 = new System.Windows.Forms.Panel();
@@ -63,6 +62,7 @@ namespace auto_battler_frontend
             this.partyPanel = new System.Windows.Forms.Panel();
             this.coinText = new System.Windows.Forms.Label();
             this.shopPanel = new System.Windows.Forms.Panel();
+            this.petHoverInfo = new auto_battler_frontend.PetHoverInfo();
             this.party1.SuspendLayout();
             this.battlePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.effectImage)).BeginInit();
@@ -83,7 +83,7 @@ namespace auto_battler_frontend
             // party5
             // 
             this.party5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.party5.Location = new System.Drawing.Point(10, 130);
+            this.party5.Location = new System.Drawing.Point(10, 199);
             this.party5.Name = "party5";
             this.party5.Size = new System.Drawing.Size(150, 150);
             this.party5.TabIndex = 2;
@@ -91,7 +91,7 @@ namespace auto_battler_frontend
             // party4
             // 
             this.party4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.party4.Location = new System.Drawing.Point(166, 130);
+            this.party4.Location = new System.Drawing.Point(166, 199);
             this.party4.Name = "party4";
             this.party4.Size = new System.Drawing.Size(150, 150);
             this.party4.TabIndex = 3;
@@ -99,7 +99,7 @@ namespace auto_battler_frontend
             // party3
             // 
             this.party3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.party3.Location = new System.Drawing.Point(322, 130);
+            this.party3.Location = new System.Drawing.Point(322, 199);
             this.party3.Name = "party3";
             this.party3.Size = new System.Drawing.Size(150, 150);
             this.party3.TabIndex = 4;
@@ -107,7 +107,7 @@ namespace auto_battler_frontend
             // party2
             // 
             this.party2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.party2.Location = new System.Drawing.Point(478, 130);
+            this.party2.Location = new System.Drawing.Point(478, 199);
             this.party2.Name = "party2";
             this.party2.Size = new System.Drawing.Size(150, 150);
             this.party2.TabIndex = 5;
@@ -116,7 +116,7 @@ namespace auto_battler_frontend
             // 
             this.party1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.party1.Controls.Add(this.label1);
-            this.party1.Location = new System.Drawing.Point(634, 130);
+            this.party1.Location = new System.Drawing.Point(634, 199);
             this.party1.Name = "party1";
             this.party1.Size = new System.Drawing.Size(150, 150);
             this.party1.TabIndex = 6;
@@ -178,14 +178,6 @@ namespace auto_battler_frontend
             this.rollButton.Text = "Roll";
             this.rollButton.UseVisualStyleBackColor = true;
             this.rollButton.Click += new System.EventHandler(this.rollButton_Click);
-            // 
-            // hoverInfo
-            // 
-            this.hoverInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hoverInfo.Location = new System.Drawing.Point(1074, 577);
-            this.hoverInfo.Name = "hoverInfo";
-            this.hoverInfo.Size = new System.Drawing.Size(317, 181);
-            this.hoverInfo.TabIndex = 13;
             // 
             // readyButton
             // 
@@ -344,9 +336,9 @@ namespace auto_battler_frontend
             this.partyPanel.Controls.Add(this.party3);
             this.partyPanel.Controls.Add(this.party4);
             this.partyPanel.Controls.Add(this.party5);
-            this.partyPanel.Location = new System.Drawing.Point(12, 2);
+            this.partyPanel.Location = new System.Drawing.Point(47, 12);
             this.partyPanel.Name = "partyPanel";
-            this.partyPanel.Size = new System.Drawing.Size(795, 294);
+            this.partyPanel.Size = new System.Drawing.Size(795, 362);
             this.partyPanel.TabIndex = 18;
             // 
             // coinText
@@ -366,21 +358,30 @@ namespace auto_battler_frontend
             this.shopPanel.Controls.Add(this.shop3);
             this.shopPanel.Controls.Add(this.shop2);
             this.shopPanel.Controls.Add(this.shop1);
-            this.shopPanel.Location = new System.Drawing.Point(25, 535);
+            this.shopPanel.Location = new System.Drawing.Point(47, 536);
             this.shopPanel.Name = "shopPanel";
             this.shopPanel.Size = new System.Drawing.Size(813, 294);
             this.shopPanel.TabIndex = 19;
+            // 
+            // petHoverInfo
+            // 
+            this.petHoverInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.petHoverInfo.Location = new System.Drawing.Point(1030, 618);
+            this.petHoverInfo.Name = "petHoverInfo";
+            this.petHoverInfo.Size = new System.Drawing.Size(248, 178);
+            this.petHoverInfo.TabIndex = 20;
+            this.petHoverInfo.Visible = false;
             // 
             // Battler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1582, 853);
+            this.Controls.Add(this.petHoverInfo);
             this.Controls.Add(this.shopPanel);
             this.Controls.Add(this.partyPanel);
             this.Controls.Add(this.battlePanel);
             this.Controls.Add(this.readyButton);
-            this.Controls.Add(this.hoverInfo);
             this.Controls.Add(this.roomCodeLabel);
             this.Name = "Battler";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -422,8 +423,6 @@ namespace auto_battler_frontend
 
         private System.Windows.Forms.Button readyButton;
 
-        private System.Windows.Forms.Label hoverInfo;
-
         private System.Windows.Forms.Panel shop1;
         private System.Windows.Forms.Panel shop2;
         private System.Windows.Forms.Panel shop3;
@@ -441,5 +440,7 @@ namespace auto_battler_frontend
         private System.Windows.Forms.Label roomCodeLabel;
 
         #endregion
+
+        private auto_battler_frontend.PetHoverInfo petHoverInfo;
     }
 }
