@@ -55,19 +55,19 @@ namespace auto_battler_frontend
             instance = this;
             this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             InitializeComponent();
+            
             this.roomCode = roomCode;
             this.username = username;
             this.client = client;
             client.Off("receiveShop");
 
             inspector ??= new Inspector();
-            
-            
+
             roomCodeLabel.Text = $"RoomCode: {roomCode}\nUsername: {username}";
 
             client.On("receiveShop",  async(response) =>
             {
-                await ClearControls("shop");
+                // await ClearControls("shop");
                 var pets = JsonConvert.DeserializeObject<List<Pet>>(response.GetValue<string>());
                 
                 if(pets == null) return;
@@ -109,62 +109,8 @@ namespace auto_battler_frontend
                 {
                     pets.Add(null);
                 }
-                
-                partyPets = pets.ToArray();
 
-                MakePets(pets, "party", async (label, index) =>
-                {
-                    // Check if there is already a pet in this slot and if the shop selected pet is the same as the party pet
-                    if (selectedPartyIndex == -1 && selectedShopIndex != -1 && shopPets[selectedShopIndex] != null && partyPets[index] != null)
-                    {
-                        if (partyPets[index]?.Id == shopPets[selectedShopIndex]?.Id)
-                        {
-                            if (coins < 3 && !MainPage.disableCoins)
-                            {
-                                coinText.ForeColor = Color.Red;
-                                await Task.Delay(350).ConfigureAwait(false);
-                                coinText.ForeColor = Color.Black;
-                                return;
-                            }
-                            
-                            await client.EmitAsync("buyPet", selectedShopIndex, index);
-                            coins -= 3;
-                            coinText.Text = $"Coins: {coins}";
-                            selectedShopIndex = -1;
-                        }
-
-                        return;
-                    }
-                    
-                    // Unselect the pet
-                    if (selectedPartyIndex == index)
-                    {
-                        selectedPartyIndex = -1;
-                        label.BackColor = Color.Transparent;
-                    }
-                    else if (selectedPartyIndex != -1)
-                    {
-                        // label.BackColor = Color.LightBlue;
-                        Controls.Find( $"party{selectedPartyIndex+1}", true)[0].Controls[0].BackColor = Color.Transparent;
-                        
-                        // Check if the pets are the same type
-                        if (partyPets[selectedPartyIndex]?.Id == partyPets[index]?.Id && partyPets[selectedPartyIndex]?.Level != 3 && partyPets[index]?.Level != 3)
-                        {
-                            await client.EmitAsync("mergePets", selectedPartyIndex, index);
-                        }
-                        else
-                        {
-                            await client.EmitAsync("swapPet", selectedPartyIndex, index);
-                        }
-
-                        selectedPartyIndex = -1;
-                    }
-                    else
-                    {
-                        selectedPartyIndex = index;
-                        label.BackColor = Color.LightBlue;
-                    }
-                });
+                UpdateParty(pets);
             });
 
             void BattleStarted(SocketIOResponse response)
@@ -203,6 +149,22 @@ namespace auto_battler_frontend
             }
 
             client.On("battleStarted", BattleStarted);
+            
+            client.On("soldSuccess", async(response) =>
+            {
+                var info = JsonConvert.DeserializeObject(response.GetValue<string>(), new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include });
+                
+                if(info == null) return;
+
+                var soldIndex = (info as JObject).GetValue("soldIndex").ToObject(typeof(int)) as int?;
+                var soldPet = partyPets[soldIndex ?? -1];
+                
+                var randomThings = (info as JObject).GetValue("randomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
+
+                shopPanel.Invoke((Action)(() => shopPanel.Hide()));
+                await BattleHelper.DoSellEffect(soldPet, partyPets, randomThings);
+                shopPanel.Invoke((Action)(() => shopPanel.Show()));
+            });
 
             InitializeClickEvents();
 
@@ -335,6 +297,68 @@ namespace auto_battler_frontend
             }
         }
 
+        public void UpdateParty(IList<Pet?> pets)
+        {
+            partyPets = pets.ToArray();
+            MakePets(pets, "party", async (label, index) =>
+                {
+                    // Check if there is already a pet in this slot and if the shop selected pet is the same as the party pet
+                    if (selectedPartyIndex == -1 && selectedShopIndex != -1 && shopPets[selectedShopIndex] != null && partyPets[index] != null)
+                    {
+                        if (partyPets[index]?.Id == shopPets[selectedShopIndex]?.Id)
+                        {
+                            if (coins < 3 && !MainPage.disableCoins)
+                            {
+                                coinText.ForeColor = Color.Red;
+                                await Task.Delay(350).ConfigureAwait(false);
+                                coinText.ForeColor = Color.Black;
+                                return;
+                            }
+                            
+                            await client.EmitAsync("buyPet", selectedShopIndex, index);
+                            coins -= 3;
+                            coinText.Text = $"Coins: {coins}";
+                            selectedShopIndex = -1;
+                        }
+
+                        return;
+                    }
+                    
+                    // Unselect the pet
+                    if (selectedPartyIndex == index)
+                    {
+                        selectedPartyIndex = -1;
+                        label.BackColor = Color.Transparent;
+                        sellButton.Visible = false;
+                    }
+                    else if (selectedPartyIndex != -1)
+                    {
+                        // label.BackColor = Color.LightBlue;
+                        Controls.Find( $"party{selectedPartyIndex+1}", true)[0].Controls[0].BackColor = Color.Transparent;
+                        
+                        // Check if the pets are the same type
+                        if (partyPets[selectedPartyIndex]?.Id == partyPets[index]?.Id && partyPets[selectedPartyIndex]?.Level != 3 && partyPets[index]?.Level != 3)
+                        {
+                            await client.EmitAsync("mergePets", selectedPartyIndex, index);
+                        }
+                        else
+                        {
+                            await client.EmitAsync("swapPet", selectedPartyIndex, index);
+                        }
+
+                        selectedPartyIndex = -1;
+                        sellButton.Visible = false;
+                    }
+                    else
+                    {
+                        selectedPartyIndex = index;
+                        label.BackColor = Color.LightBlue;
+                        
+                        sellButton.Visible = true;
+                    }
+                });
+        }
+
         public System.Drawing.Image GetImage(string unicodeCharacter, Control sizeReference, bool rightSide = false)
         {
             var x = unicodeCharacter[0];
@@ -385,6 +409,7 @@ namespace auto_battler_frontend
                     {
                         await client.EmitAsync("swapPet", selectedPartyIndex, index-1);
                         selectedPartyIndex = -1;
+                        sellButton.Visible = false;
                     }
                 };
             }
@@ -432,6 +457,18 @@ namespace auto_battler_frontend
         private void readyButton_Click(object sender, EventArgs e)
         {
             client.EmitAsync("ready");
+        }
+        
+        private void sellButton_Click(object sender, EventArgs e)
+        {
+            if (selectedPartyIndex != -1)
+            {
+                coins += partyPets[selectedPartyIndex].Level;
+                coinText.Text = $"Coins: {coins}";
+                client.EmitAsync("sellPet", selectedPartyIndex);
+                selectedPartyIndex = -1;
+                sellButton.Visible = false;
+            }
         }
 
         // private void button1_Click(object sender, EventArgs e)

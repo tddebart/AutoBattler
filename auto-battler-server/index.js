@@ -16,7 +16,8 @@ const {
 } = require('./Pets');
 
 const {
-    SimulateBattle
+    SimulateBattle,
+    DoSellEffect
 } = require('./BattleHelper')
 const app = express();
 const server = http.createServer(app);
@@ -129,6 +130,26 @@ io.on('connection', socket => {
         }
     });
     
+    socket.on('sellPet', (index) => {
+        const user = getUser(socket.id);
+        
+        if (user) {
+            console.log(`${user.username} sold ${user.partyPets[index].name}`);
+            user.coins += user.partyPets[index].level;
+            
+            let currentRandomThings = DoSellEffect(user.partyPets[index], user.partyPets, user.shopPets);
+            let soldPet = JSON.parse(JSON.stringify(user.partyPets[index]));
+            
+            user.partyPets[index] = null;
+
+            // socket.emit('receiveParty', JSON.stringify(user.partyPets));
+            socket.emit('receiveShop', JSON.stringify(user.shopPets));
+            socket.emit('soldSuccess', JSON.stringify({
+                randomThings: currentRandomThings,
+                soldIndex: index
+            }));
+        }
+    });
     socket.on('ready', () => {
         const user = getUser(socket.id);
         

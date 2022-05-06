@@ -77,12 +77,15 @@ namespace auto_battler_frontend
             this.partyLevel1 = new auto_battler_frontend.PetLevel();
             this.coinText = new System.Windows.Forms.Label();
             this.shopPanel = new System.Windows.Forms.Panel();
+            this.sellButton = new System.Windows.Forms.Button();
             this.petHoverInfo = new auto_battler_frontend.PetHoverInfo();
+            this.effectImageParty = new System.Windows.Forms.PictureBox();
             this.party1.SuspendLayout();
             this.battlePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.effectImage)).BeginInit();
             this.partyPanel.SuspendLayout();
             this.shopPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.effectImageParty)).BeginInit();
             this.SuspendLayout();
             // 
             // roomCodeLabel
@@ -293,11 +296,11 @@ namespace auto_battler_frontend
             this.battlePanel.Controls.Add(this.battleOpLevel2);
             this.battlePanel.Controls.Add(this.battleOpLevel1);
             this.battlePanel.Controls.Add(this.battleLevel5);
+            this.battlePanel.Controls.Add(this.effectImage);
             this.battlePanel.Controls.Add(this.battleLevel4);
             this.battlePanel.Controls.Add(this.battleLevel3);
             this.battlePanel.Controls.Add(this.battleLevel2);
             this.battlePanel.Controls.Add(this.battleLevel1);
-            this.battlePanel.Controls.Add(this.effectImage);
             this.battlePanel.Controls.Add(this.party1DamageText);
             this.battlePanel.Controls.Add(this.party2DamageText);
             this.battlePanel.Controls.Add(this.battleOp5);
@@ -390,7 +393,7 @@ namespace auto_battler_frontend
             // 
             this.effectImage.BackColor = System.Drawing.Color.Transparent;
             this.effectImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.effectImage.Location = new System.Drawing.Point(788, 26);
+            this.effectImage.Location = new System.Drawing.Point(814, 15);
             this.effectImage.Name = "effectImage";
             this.effectImage.Size = new System.Drawing.Size(75, 75);
             this.effectImage.TabIndex = 23;
@@ -425,6 +428,7 @@ namespace auto_battler_frontend
             // 
             // partyPanel
             // 
+            this.partyPanel.Controls.Add(this.effectImageParty);
             this.partyPanel.Controls.Add(this.partyLevel5);
             this.partyPanel.Controls.Add(this.partyLevel4);
             this.partyPanel.Controls.Add(this.partyLevel3);
@@ -492,6 +496,7 @@ namespace auto_battler_frontend
             // 
             // shopPanel
             // 
+            this.shopPanel.Controls.Add(this.sellButton);
             this.shopPanel.Controls.Add(this.rollButton);
             this.shopPanel.Controls.Add(this.shop5);
             this.shopPanel.Controls.Add(this.shop4);
@@ -500,17 +505,40 @@ namespace auto_battler_frontend
             this.shopPanel.Controls.Add(this.shop1);
             this.shopPanel.Location = new System.Drawing.Point(47, 483);
             this.shopPanel.Name = "shopPanel";
-            this.shopPanel.Size = new System.Drawing.Size(813, 347);
+            this.shopPanel.Size = new System.Drawing.Size(1063, 347);
             this.shopPanel.TabIndex = 19;
+            // 
+            // sellButton
+            // 
+            this.sellButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.sellButton.Location = new System.Drawing.Point(842, 266);
+            this.sellButton.Name = "sellButton";
+            this.sellButton.Size = new System.Drawing.Size(146, 70);
+            this.sellButton.TabIndex = 13;
+            this.sellButton.Text = "Sell";
+            this.sellButton.UseVisualStyleBackColor = true;
+            this.sellButton.Visible = false;
+            this.sellButton.Click += new System.EventHandler(this.sellButton_Click);
             // 
             // petHoverInfo
             // 
             this.petHoverInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.petHoverInfo.Location = new System.Drawing.Point(1030, 618);
+            this.petHoverInfo.Location = new System.Drawing.Point(1293, 516);
             this.petHoverInfo.Name = "petHoverInfo";
             this.petHoverInfo.Size = new System.Drawing.Size(248, 178);
             this.petHoverInfo.TabIndex = 20;
             this.petHoverInfo.Visible = false;
+            // 
+            // effectImageParty
+            // 
+            this.effectImageParty.BackColor = System.Drawing.Color.Transparent;
+            this.effectImageParty.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.effectImageParty.Location = new System.Drawing.Point(631, 25);
+            this.effectImageParty.Name = "effectImageParty";
+            this.effectImageParty.Size = new System.Drawing.Size(75, 75);
+            this.effectImageParty.TabIndex = 40;
+            this.effectImageParty.TabStop = false;
+            this.effectImageParty.Visible = false;
             // 
             // Battler
             // 
@@ -531,8 +559,13 @@ namespace auto_battler_frontend
             ((System.ComponentModel.ISupportInitialize)(this.effectImage)).EndInit();
             this.partyPanel.ResumeLayout(false);
             this.shopPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.effectImageParty)).EndInit();
             this.ResumeLayout(false);
         }
+
+        public System.Windows.Forms.PictureBox effectImageParty;
+
+        private System.Windows.Forms.Button sellButton;
 
         private auto_battler_frontend.PetLevel battleOpLevel1;
         private auto_battler_frontend.PetLevel battleOpLevel2;

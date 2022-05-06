@@ -113,6 +113,9 @@ public static class BattleHelper
         battler.partyPanel.Invoke((Action)(() => battler.partyPanel.Show()));
         battler.shopPanel.Invoke((Action)(() => battler.shopPanel.Show()));
         battler.battlePanel.Invoke((Action)(() => battler.battlePanel.Hide()));
+
+        party1 = null;
+        party2 = null;
     }
 
     public static async Task CheckDeath()
@@ -193,17 +196,13 @@ public static class BattleHelper
 
     public static async Task AnimateEffectImage(int pet1Index, int pet2Index, bool pet1OurParty, bool pet2OurParty, string unicode)
     {
-        if (pet1Index == 4 && pet2Index == 4)
-        {
-            var x = 0;
-        }
-        
         var effectImage = Battler.instance.effectImage;
         pet1Index++;
         pet2Index++;
 
         effectImage.Invoke((Action)(() =>
         {
+            effectImage.Parent.Controls.SetChildIndex(effectImage, 0);
             effectImage.Location = Battler.instance.Controls.Find(pet1OurParty ? "battle" + pet1Index : "battleOp" + pet1Index, true).First().Location;
             effectImage.Location = new Point(effectImage.Location.X, effectImage.Location.Y - effectImage.Height);
         }));
@@ -218,6 +217,42 @@ public static class BattleHelper
                     
                     effectImage.Animate(new YLocationEffect(), EasingFunctions.Linear, effectImage.Location.Y - 75, 400, 0, true);
                     effectImage.Animate(new XLocationEffect(), EasingFunctions.Linear, Battler.instance.Controls.Find(pet2OurParty ? "battle" + pet2Index : "battleOp" + pet2Index, true).First().Location.X+5, 800, 0);
+                }
+            ));
+        
+        await Task.Delay(830).ConfigureAwait(false);
+        
+        effectImage.Invoke((Action)(() =>
+                {
+                    effectImage.Location = origPos;
+                    effectImage.Visible = false;
+                }
+            ));
+    }
+    
+    public static async Task AnimateEffectImageParty(int pet1Index, int pet2Index, string unicode)
+    {
+        var effectImage = Battler.instance.effectImageParty;
+        pet1Index++;
+        pet2Index++;
+
+        effectImage.Invoke((Action)(() =>
+        {
+            effectImage.Parent.Controls.SetChildIndex(effectImage, 0);
+            effectImage.Location = Battler.instance.Controls.Find("party" + pet1Index, true).First().Location;
+            effectImage.Location = new Point(effectImage.Location.X, effectImage.Location.Y - effectImage.Height);
+        }));
+        
+        var origPos = effectImage.Location;
+        effectImage.Invoke((Action)(() =>
+                {
+                    effectImage.Visible = true;
+                    var image = Resources.ResourceManager.GetObject($"emoji_u{unicode.ToLower()}") as System.Drawing.Image;
+                    image = new Bitmap(image, new Size(effectImage.Size.Width, effectImage.Size.Height));
+                    effectImage.Image = image;
+                    
+                    effectImage.Animate(new YLocationEffect(), EasingFunctions.Linear, effectImage.Location.Y - 75, 400, 0, true);
+                    effectImage.Animate(new XLocationEffect(), EasingFunctions.Linear, Battler.instance.Controls.Find("party" + pet2Index, true).First().Location.X+5, 800, 0);
                 }
             ));
         
@@ -358,7 +393,53 @@ public static class BattleHelper
         }
         
         await Task.Delay(200).ConfigureAwait(false);
-                
+    }
+
+    public static async Task DoSellEffect(Pet pet, IList<Pet?> party, IList<Battler.RandomThing> randomThings)
+    {
+        var ability = pet.Ability;
+        if (ability != null && ability.Trigger == Trigger.Sell)
+        {
+            if (ability.TriggeredBy.Kind == "Self")
+            {
+                if (ability.Effect.Kind == "ModifyStats")
+                {
+                    var effect = ability.Effect;
+                    if (effect.Target.Kind == "RandomFriend")
+                    {
+                        for (var i = 0; i < effect.Target.N; i++)
+                        {
+                            if (randomThings.Count == 0) continue;
+                            
+                            var randomThing = randomThings.First(t => party.IndexOf(pet) == t.petTriggerIndex);
+                            var target = party[randomThing.petTargetIndex];
+                            if (target != null)
+                            {
+                                target.CurrentHealth += effect.HealthAmount;
+                                if (!string.IsNullOrEmpty(effect.AttackAmount))
+                                {
+                                    target.CurrentAttack += int.Parse(effect.AttackAmount);
+                                }
+                            }
+                        
+                            await AnimateEffectImageParty(randomThing.petTriggerIndex, randomThing.petTargetIndex, "1f354");
+                            randomThings.Remove(randomThing);
+                            Battler.instance.UpdateParty(party);
+                            await Task.Delay(200).ConfigureAwait(false);
+                        }
+                    }
+                } else if (ability.Effect.Kind == "GainGold")
+                {
+                    Battler.instance.coins += Convert.ToInt32(ability.Effect.Amount);
+                    Battler.instance.coinText.Text = $"Coins: {Battler.instance.coins}";
+                }
+            }
+        }
+
+        party[party.IndexOf(pet)] = null;
+        Battler.instance.UpdateParty(party);
+        
+        await Task.Delay(200).ConfigureAwait(false);
     }
 
     public static void MovePetsForward(LinkedList<Pet?> party1, LinkedList<Pet?> party2)
