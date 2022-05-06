@@ -95,7 +95,7 @@ function CheckDeadEffects(pet,party, randomThings) {
     let shouldRemove = true;
 
     if (pet != null && pet.currentHealth <= 0) {
-        let ability = pet.level1Ability;
+        let ability = GetAbility(pet);
         if (ability != null && ability.trigger === "Faint" && ability.triggeredBy.kind === "Self") {
             if (ability.effect.kind === "ModifyStats") {
                 let effect = ability.effect;
@@ -144,7 +144,7 @@ function CheckDeadEffects(pet,party, randomThings) {
 function CheckSummonedEffect(pet,party) {
     for (let i = 0; i < party.length; i++) {
         if (party[i] != null) {
-            let ability = party[i].level1Ability;
+            let ability = GetAbility(party[i]);
             
             if (ability != null && ability.trigger === "Summoned") {
                 if (ability.effect.kind === "ModifyStats") {
@@ -167,7 +167,7 @@ function DoStartBattleEffects(party1,party2, randomThings) {
     for (let i = 0; i < party1.length; i++) {
         let pet = party1[i];
         if(pet != null) {
-            let ability = pet.level1Ability;
+            let ability = GetAbility(pet);
             
             if(ability != null && ability.trigger === "StartOfBattle") {
                 if (ability.effect.kind === "DealDamage") {
@@ -196,6 +196,17 @@ function DoStartBattleEffects(party1,party2, randomThings) {
 function ModifyStats(pet, effect) {
     pet.currentAttack += effect.attackAmount;
     pet.currentHealth += effect.healthAmount;
+}
+
+function GetAbility(pet) {
+    switch (pet.level) {
+        case 1:
+            return pet.level1Ability;
+        case 2:
+            return pet.level2Ability;
+        case 3:
+            return pet.level3Ability;
+    } 
 }
 
 function AreAllPetsDead(party) {

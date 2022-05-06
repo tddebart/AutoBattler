@@ -144,7 +144,10 @@ public class Probability
 public class Pet
 {
     public string Name;
+    public string Id;
     public string Tier;
+    public int Experience;
+    public int Level;
 
     public string BaseAttack;
 
@@ -167,11 +170,11 @@ public class Pet
     {
         get
         {
-            return Tier switch
+            return Level switch
             {
-                "1" => Level1Ability,
-                "2" => Level2Ability,
-                "3" => Level3Ability,
+                1 => Level1Ability,
+                2 => Level2Ability,
+                3 => Level3Ability,
                 _ => Level1Ability
             };
         }

@@ -117,6 +117,12 @@
     <Compile Include="PetHoverInfo.Designer.cs">
       <DependentUpon>PetHoverInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="PetLevel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PetLevel.Designer.cs">
+      <DependentUpon>PetLevel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Pets.cs" />
     <Compile Include="StartPage.cs">
       <SubType>Form</SubType>
@@ -134,6 +140,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PetHoverInfo.resx">
       <DependentUpon>PetHoverInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PetLevel.resx">
+      <DependentUpon>PetLevel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

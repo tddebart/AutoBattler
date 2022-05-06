@@ -28,6 +28,8 @@ function Init() {
                 if (p.level3Ability?.effect?.pet !== undefined) {
                     p.level3Ability.effect.pet = info.pets.find(p2 => p2.id === p.level3Ability.effect.pet);
                 } 
+                p.experience = 0;
+                p.level = 1;
             } );
             //info.pets.forEach(p => p.image.unicodeCodePoint = pc.toASCII(p.image.unicodeCodePoint));
             // console.log(info.pets[0].packs);
@@ -53,10 +55,47 @@ function GetRandomPet() {
         randomPet.currentHealth = randomPet.baseHealth;
     }
 
-    return randomPet;
+    return JSON.parse(JSON.stringify(randomPet));
+}
+
+function MergePets(index1, index2, pet1, pet2,user) {
+    
+    pet1.experience += pet2.experience+1;
+    
+    let newHealth = Math.max(pet1.currentHealth, pet2.currentHealth);
+    let newAttack = Math.max(pet1.currentAttack, pet2.currentAttack);
+    
+    CheckExperience(pet1)
+    
+    pet1.currentHealth = newHealth;
+    pet1.currentAttack = newAttack;
+    
+    pet1.currentAttack += 1;
+    pet1.currentHealth += 1;
+    
+    user.partyPets[index2] = pet1;
+    if (index1 !== -1) {
+        user.partyPets[index1] = null;
+    }
+}
+
+function CheckExperience(pet) {
+    switch(pet.level) {
+        case 1:
+            if (pet.experience >= 2) {
+                pet.level = 2;
+                CheckExperience(pet);
+            }
+            break;
+        case 2:
+            if (pet.experience >= 5) {
+                pet.level = 3;
+            }
+    }
 }
 
 module.exports = {
     Init: Init,
-    GetRandomPet: GetRandomPet
+    GetRandomPet: GetRandomPet,
+    MergePets: MergePets
 };

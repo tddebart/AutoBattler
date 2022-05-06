@@ -39,6 +39,7 @@ namespace auto_battler_frontend
             this.joinRoomButton = new System.Windows.Forms.Button();
             this.userNameLabel = new System.Windows.Forms.Label();
             this.disableCoinsButton = new System.Windows.Forms.Button();
+            this.resetButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -123,11 +124,23 @@ namespace auto_battler_frontend
             this.disableCoinsButton.UseVisualStyleBackColor = true;
             this.disableCoinsButton.Click += new System.EventHandler(this.disableCoinsButton_Click);
             // 
+            // resetButton
+            // 
+            this.resetButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.resetButton.Location = new System.Drawing.Point(20, 796);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(117, 45);
+            this.resetButton.TabIndex = 11;
+            this.resetButton.Text = "RESET";
+            this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
             // MainPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1582, 853);
+            this.Controls.Add(this.resetButton);
             this.Controls.Add(this.disableCoinsButton);
             this.Controls.Add(this.userNameLabel);
             this.Controls.Add(this.joinRoomButton);
@@ -142,6 +155,8 @@ namespace auto_battler_frontend
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Button resetButton;
 
         private System.Windows.Forms.Button disableCoinsButton;
 

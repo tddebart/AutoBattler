@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
+using auto_battler_frontend.Properties;
 using SocketIOClient;
 
 namespace auto_battler_frontend
@@ -98,6 +99,11 @@ namespace auto_battler_frontend
         {
             client.EmitAsync("disableCoins");
             disableCoins = true;
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            Settings.Default.Reset();
         }
     }
 }

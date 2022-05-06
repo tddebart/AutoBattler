@@ -11,7 +11,8 @@ const {
 } = require('./userHelper');
 const {
     Init,
-    GetRandomPet
+    GetRandomPet,
+    MergePets
 } = require('./Pets');
 
 const {
@@ -54,7 +55,7 @@ io.on('connection', socket => {
     socket.on("getShop", () => {
         const user = getUser(socket.id);
         
-        if (user && user.coins >= 1) {
+        if (user && (user.coins >= 1 || disableCoins)) {
             let pets = [];
             
             for (let i = 0; i < 5; i++) {
@@ -73,15 +74,28 @@ io.on('connection', socket => {
     socket.on('buyPet', (shopIndex, partyIndex) => {
         const user = getUser(socket.id);
         
-        if (user && user.shopPets[shopIndex] != null && user.coins >= 3) {
+        if (user && user.shopPets[shopIndex] != null && (user.coins >= 3 || disableCoins)) {
             console.log(`${user.username} bought ${user.shopPets[shopIndex].name}`);
             
-            user.partyPets[partyIndex] = user.shopPets[shopIndex];
-            user.shopPets[shopIndex] = null;
-            user.coins -= 3;
+            if (user.partyPets[partyIndex] != null && user.shopPets[shopIndex].id === user.partyPets[partyIndex]?.id && user.partyPets[partyIndex]?.level !== 3) {
+                user.coins -= 3;
+                
+                MergePets(-1, partyIndex,user.shopPets[shopIndex], user.partyPets[partyIndex], user);
+                
+                user.shopPets[shopIndex] = null;
+                socket.emit('receiveShop', JSON.stringify(user.shopPets));
+                socket.emit('receiveParty', JSON.stringify(user.partyPets));
+            } 
+            else 
+            {
+                user.partyPets[partyIndex] = user.shopPets[shopIndex];
+                user.shopPets[shopIndex] = null;
+                user.coins -= 3;
+                
+                socket.emit('receiveParty', JSON.stringify(user.partyPets));
+                socket.emit('receiveShop', JSON.stringify(user.shopPets));
+            }
             
-            socket.emit('receiveParty', JSON.stringify(user.partyPets));
-            socket.emit('receiveShop', JSON.stringify(user.shopPets));
         }
     });
     
@@ -96,6 +110,22 @@ io.on('connection', socket => {
             user.partyPets[index2] = temp;
             
             socket.emit('receiveParty', JSON.stringify(user.partyPets));
+        }
+    });
+    
+    socket.on('mergePets', (index1, index2) => {
+        const user = getUser(socket.id);
+        
+        if (user) {
+            const pet1 = user.partyPets[index1];
+            const pet2 = user.partyPets[index2];
+            
+            if (pet1.id === pet2.id && pet1.level !== 3 && pet2.level !== 3) {
+                console.log(`${user.username} merged ${pet1.name} and ${pet2.name}`);
+                MergePets(index1, index2,pet1, pet2, user)
+                
+                socket.emit('receiveParty', JSON.stringify(user.partyPets));
+            }
         }
     });
     

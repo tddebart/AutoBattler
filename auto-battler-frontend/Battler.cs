@@ -83,6 +83,10 @@ namespace auto_battler_frontend
                     }
                     else
                     {
+                        if (selectedShopIndex != -1)
+                        {
+                            Controls.Find( $"shop{selectedShopIndex+1}", true)[0].Controls[0].BackColor = Color.Transparent;
+                        }
                         selectedShopIndex = index;
                         Label.BackColor = Color.LightBlue;
                     }
@@ -108,8 +112,31 @@ namespace auto_battler_frontend
                 
                 partyPets = pets.ToArray();
 
-                MakePets(pets, "party", (label, index) =>
+                MakePets(pets, "party", async (label, index) =>
                 {
+                    // Check if there is already a pet in this slot and if the shop selected pet is the same as the party pet
+                    if (selectedPartyIndex == -1 && selectedShopIndex != -1 && shopPets[selectedShopIndex] != null && partyPets[index] != null)
+                    {
+                        if (partyPets[index]?.Id == shopPets[selectedShopIndex]?.Id)
+                        {
+                            if (coins < 3 && !MainPage.disableCoins)
+                            {
+                                coinText.ForeColor = Color.Red;
+                                await Task.Delay(350).ConfigureAwait(false);
+                                coinText.ForeColor = Color.Black;
+                                return;
+                            }
+                            
+                            await client.EmitAsync("buyPet", selectedShopIndex, index);
+                            coins -= 3;
+                            coinText.Text = $"Coins: {coins}";
+                            selectedShopIndex = -1;
+                        }
+
+                        return;
+                    }
+                    
+                    // Unselect the pet
                     if (selectedPartyIndex == index)
                     {
                         selectedPartyIndex = -1;
@@ -117,7 +144,19 @@ namespace auto_battler_frontend
                     }
                     else if (selectedPartyIndex != -1)
                     {
-                        client.EmitAsync("swapPet", selectedPartyIndex, index);
+                        // label.BackColor = Color.LightBlue;
+                        Controls.Find( $"party{selectedPartyIndex+1}", true)[0].Controls[0].BackColor = Color.Transparent;
+                        
+                        // Check if the pets are the same type
+                        if (partyPets[selectedPartyIndex]?.Id == partyPets[index]?.Id && partyPets[selectedPartyIndex]?.Level != 3 && partyPets[index]?.Level != 3)
+                        {
+                            await client.EmitAsync("mergePets", selectedPartyIndex, index);
+                        }
+                        else
+                        {
+                            await client.EmitAsync("swapPet", selectedPartyIndex, index);
+                        }
+
                         selectedPartyIndex = -1;
                     }
                     else
@@ -182,7 +221,63 @@ namespace auto_battler_frontend
                 var container = Controls.Find(controllerPrefix + i, true).First();
                 container.Invoke((Action)(() => container.Controls.Clear()));
                 
+                var levelContainer = Controls.Find(controllerPrefix + "Level" + i, true).FirstOrDefault() as PetLevel;
+
+                if (levelContainer != null)
+                {
+                    levelContainer.Invoke((Action)(() =>
+                    {
+                        if (pet == null)
+                        {
+                            levelContainer.Hide();
+                        }
+                        else
+                        {
+                            levelContainer.Show();
+                        }
+                    }));
+                }
+                    
+                
+                
                 if(pet == null) continue;
+
+                if (levelContainer != null)
+                {
+                    levelContainer.lvlText.Invoke((Action)(() => levelContainer.lvlText.Text = $"Lvl{pet.Level}"));
+                    levelContainer.experienceBar.Invoke((Action)(() =>
+                    {
+                        switch (pet.Level)
+                        {
+                            case 1:
+                                if (pet.Experience != 0)
+                                {
+                                    levelContainer.experienceBar.Width = (int)(pet.Experience / 2f * levelContainer.expBack.Width);
+                                } else
+                                {
+                                    levelContainer.experienceBar.Width = 10;
+                                }
+                                
+                                break;
+                            
+                            case 2:
+                                if (pet.Experience != 2)
+                                {
+                                    levelContainer.experienceBar.Width = (int)(pet.Experience / 5f * levelContainer.expBack.Width);
+                                }
+                                else
+                                {
+                                    levelContainer.experienceBar.Width = 10;
+                                }
+
+                                break;
+                            case 3:
+                                levelContainer.experienceBar.Width = levelContainer.expBack.Width;
+                                break;
+                        }
+                    }));
+                }
+                
                 
 
                 var label = new Label
@@ -216,7 +311,7 @@ namespace auto_battler_frontend
                 {
                     var point = PointToClient(label.PointToScreen(label.Location));
                     
-                    point.Offset(-petHoverInfo.Width/2, -petHoverInfo.Height/2 - 150);
+                    point.Offset(-petHoverInfo.Width/2, -petHoverInfo.Height/2 - 180);
                     point.Offset(label.Width/2, label.Height/2);
                     
                     petHoverInfo.Location = point;
