@@ -174,6 +174,24 @@ namespace auto_battler_frontend
                 shopPanel.Invoke((Action)(() => shopPanel.Show()));
             });
 
+            client.On("mergeSuccess", async (response) =>
+            {
+                var info = JsonConvert.DeserializeObject(response.GetValue<string>(),
+                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include });
+
+                if (info == null) return;
+
+                var mergeIndex = (info as JObject).GetValue("index1").ToObject(typeof(int)) as int?;
+                var didLevelUp = (info as JObject).GetValue("didLevelUp").ToObject(typeof(bool)) as bool?;
+
+                if (didLevelUp.Value)
+                {
+                    shopPanel.Invoke((Action)(() => shopPanel.Hide()));
+                    await BattleHelper.DoLevelUpEffect(partyPets[mergeIndex ?? -1], partyPets);
+                    shopPanel.Invoke((Action)(() => shopPanel.Show()));
+                }
+            });
+
             InitializeClickEvents();
 
             this.Shown += (sender, args) =>

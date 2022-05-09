@@ -82,7 +82,7 @@ io.on('connection', socket => {
             if (user.partyPets[partyIndex] != null && user.shopPets[shopIndex].id === user.partyPets[partyIndex]?.id && user.partyPets[partyIndex]?.level !== 3) {
                 user.coins -= 3;
                 
-                MergePets(-1, partyIndex,user.shopPets[shopIndex], user.partyPets[partyIndex], user);
+                let didLevelUp = MergePets(-1, partyIndex,user.shopPets[shopIndex], user.partyPets[partyIndex], user);
 
                 let currentRandomThings = DoBuyEffect(user.partyPets[partyIndex], user);
                 
@@ -93,6 +93,10 @@ io.on('connection', socket => {
                     randomThings: currentRandomThings,
                     buyIndex: partyIndex
                 }))
+                socket.emit("mergeSuccess", JSON.stringify({
+                    index1: partyIndex,
+                    didLevelUp: didLevelUp
+                }) );
             } 
             else 
             {
@@ -136,9 +140,13 @@ io.on('connection', socket => {
             
             if (pet1.id === pet2.id && pet1.level !== 3 && pet2.level !== 3) {
                 console.log(`${user.username} merged ${pet1.name} and ${pet2.name}`);
-                MergePets(index1, index2,pet1, pet2, user)
+                let didLevelUp = MergePets(index1, index2,pet1, pet2, user)
                 
                 socket.emit('receiveParty', JSON.stringify(user.partyPets));
+                socket.emit("mergeSuccess", JSON.stringify({
+                    index1: index2,
+                    didLevelUp: didLevelUp
+                }) );
             }
         }
     });

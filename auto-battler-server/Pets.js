@@ -1,5 +1,6 @@
 ﻿const https = require('https');
 const pc = require('punycode');
+const {DoLevelUpEffect} = require('./BattleHelper');
 
 // Load pets from https://superauto.pet/api.json
 
@@ -61,11 +62,12 @@ function GetRandomPet() {
 function MergePets(index1, index2, pet1, pet2,user) {
     
     pet1.experience += pet2.experience+1;
+    pet1.level = pet2.level;
     
     let newHealth = Math.max(pet1.currentHealth, pet2.currentHealth);
     let newAttack = Math.max(pet1.currentAttack, pet2.currentAttack);
-    
-    CheckExperience(pet1)
+
+    let didLevelUp = CheckExperience(user, pet1)
     
     pet1.currentHealth = newHealth;
     pet1.currentAttack = newAttack;
@@ -77,20 +79,41 @@ function MergePets(index1, index2, pet1, pet2,user) {
     if (index1 !== -1) {
         user.partyPets[index1] = null;
     }
+
+    return didLevelUp;
 }
 
-function CheckExperience(pet) {
+function CheckExperience(user, pet) {
+    let didLevelUp = false;
     switch(pet.level) {
         case 1:
             if (pet.experience >= 2) {
+                console.log('Level up! level 2');
+                DoLevelUpEffect(pet, user);
+                didLevelUp = true;
                 pet.level = 2;
-                CheckExperience(pet);
+                //CheckExperience(pet);
             }
             break;
         case 2:
             if (pet.experience >= 5) {
+                console.log('Level up! level 3');
+                didLevelUp = true;
+                DoLevelUpEffect(pet, user);
                 pet.level = 3;
             }
+    }
+    
+    return didLevelUp;
+}
+
+function GetLevel(pet) {
+    if (pet.experience > 2) {
+        return 2;
+    } else if (pet.experience > 5) {
+        return 3;
+    } else {
+        return 1;
     }
 }
 

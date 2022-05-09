@@ -230,6 +230,21 @@ function DoBuyEffect(pet,user) {
     
     return currentRandomThings;
 }
+
+function DoLevelUpEffect(pet,user) {
+    const party = user.partyPets;
+    
+    let currentRandomThings = [];
+    let ability = GetAbility(pet);
+    if (ability != null && ability.trigger === "LevelUp") {
+        if (ability.triggeredBy.kind === "Self") {
+            if (ability.effect.kind === "ModifyStats") {
+                let randomThings = DoModifyStats(pet, user);
+                currentRandomThings = currentRandomThings.concat(randomThings);
+            }
+        }
+    }
+}
     
 function DoModifyStats(pet,user) {
     let currentRandomThings = [];
@@ -259,6 +274,10 @@ function DoModifyStats(pet,user) {
     } else if (effect.target.kind === "EachShopAnimal") {
         for (let i = 0; i < shopPets.length; i++) {
             ModifyStats(shopPets[i], effect);
+        }
+    } else if (effect.target.kind === "EachFriend") {
+        for (let i = 0; i < party.length; i++) {
+            ModifyStats(party[i], effect);
         }
     }
     
@@ -309,4 +328,5 @@ module.exports = {
     SimulateBattle: SimulateBattle,
     DoSellEffect: DoSellEffect,
     DoBuyEffect: DoBuyEffect,
+    DoLevelUpEffect: DoLevelUpEffect,
 }

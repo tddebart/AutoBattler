@@ -438,6 +438,21 @@ public static class BattleHelper
         await Task.Delay(200).ConfigureAwait(false);
     }
 
+    public static async Task DoLevelUpEffect(Pet? pet, IList<Pet?> party)
+    {
+        var ability = pet.Ability;
+        if (ability != null && ability.Trigger is Trigger.LevelUp)
+        {
+            if (ability.TriggeredBy.Kind == "Self")
+            {
+                if (ability.Effect.Kind == "ModifyStats")
+                {
+                    await DoModifyEffect(pet, party, null, false);
+                }
+            }
+        }
+    }
+
     public static async Task DoModifyEffect(Pet? pet,IList<Pet> party,IList<Battler.RandomThing?> randomThings, bool modifyPet= true)
     {
 
@@ -468,6 +483,22 @@ public static class BattleHelper
                 randomThings.Remove(randomThing);
                 Battler.instance.UpdateParty(party);
                 await Task.Delay(200).ConfigureAwait(false);
+            }
+        }
+        else if (effect.Target.Kind == "EachFriend")
+        {
+            foreach (var target in party.Where(p => p != null))
+            {
+                if (target != null && modifyPet)
+                {
+                    target.CurrentHealth += effect.HealthAmount;
+                    if (!string.IsNullOrEmpty(effect.AttackAmount))
+                    {
+                        target.CurrentAttack += int.Parse(effect.AttackAmount);
+                    }
+                }
+
+                await AnimateEffectImageParty(party.IndexOf(pet), party.IndexOf(target), "1f354");
             }
         }
     }
