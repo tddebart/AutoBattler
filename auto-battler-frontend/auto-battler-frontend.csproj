@@ -172,7 +172,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\emoji_u1faa8.png" />
     <Content Include="Resources\emoji_u1f354.png" />
+    <Content Include="Resources\emoji_u1f354.oldpng" />
     <Content Include="Resources\emoji_u1f40e.png" />
     <Content Include="Resources\emoji_u1f416.png" />
     <Content Include="Resources\emoji_u1f41c.png" />
@@ -183,7 +185,7 @@
     <Content Include="Resources\emoji_u1f99f.png" />
     <Content Include="Resources\emoji_u1f9a6.png" />
     <Content Include="Resources\emoji_u1f9ab.png" />
-    <Content Include="Resources\emoji_u1faa8.png" />
+    <Content Include="Resources\emoji_u1faa8.oldpng" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="VisualEffects\VisualEffects.csproj">
