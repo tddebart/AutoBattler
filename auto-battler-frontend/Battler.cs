@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using auto_battler_frontend.Properties;
 using DebugTools.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using pokemon_frontend.Properties;
 using SocketIOClient;
-using VisualEffects;
-using VisualEffects.Animations.Effects;
-using VisualEffects.Easing;
-using VisualEffects.Effects.Bounds;
-using Image = System.Drawing.Image;
 
 namespace auto_battler_frontend
 {
@@ -166,6 +157,23 @@ namespace auto_battler_frontend
                 shopPanel.Invoke((Action)(() => shopPanel.Show()));
             });
 
+            client.On("buySuccess", async (response) =>
+            {
+                await Task.Delay(50).ConfigureAwait(false);
+                var info = JsonConvert.DeserializeObject(response.GetValue<string>(), new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include });
+                
+                if(info == null) return;
+                
+                var buyIndex = (info as JObject).GetValue("buyIndex").ToObject(typeof(int)) as int?;
+                var boughtPet = partyPets[buyIndex ?? -1];
+                
+                var randomThings = (info as JObject).GetValue("randomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
+                
+                shopPanel.Invoke((Action)(() => shopPanel.Hide()));
+                await BattleHelper.DoBuyEffect(boughtPet, partyPets, randomThings);
+                shopPanel.Invoke((Action)(() => shopPanel.Show()));
+            });
+
             InitializeClickEvents();
 
             this.Shown += (sender, args) =>
@@ -280,7 +288,7 @@ namespace auto_battler_frontend
                     
                     petHoverInfo.nameLabel.Text = pet.Name;
                     petHoverInfo.tierLabel.Text = $"Tier {pet.Tier}";
-                    petHoverInfo.descriptionLabel.Text = pet.Ability.Description;
+                    petHoverInfo.descriptionLabel.Text = pet.Ability?.Description;
                 };
                 
                 label.MouseLeave += (_, _) =>

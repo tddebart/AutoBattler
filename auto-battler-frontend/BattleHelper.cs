@@ -1,11 +1,8 @@
 ﻿
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using auto_battler_frontend;
 using pokemon_frontend.Properties;
@@ -395,39 +392,16 @@ public static class BattleHelper
         await Task.Delay(200).ConfigureAwait(false);
     }
 
-    public static async Task DoSellEffect(Pet pet, IList<Pet?> party, IList<Battler.RandomThing> randomThings)
+    public static async Task DoSellEffect(Pet? pet, IList<Pet?> party, IList<Battler.RandomThing?> randomThings)
     {
         var ability = pet.Ability;
-        if (ability != null && ability.Trigger == Trigger.Sell)
+        if (ability != null && ability.Trigger is Trigger.Sell)
         {
             if (ability.TriggeredBy.Kind == "Self")
             {
                 if (ability.Effect.Kind == "ModifyStats")
                 {
-                    var effect = ability.Effect;
-                    if (effect.Target.Kind == "RandomFriend")
-                    {
-                        for (var i = 0; i < effect.Target.N; i++)
-                        {
-                            if (randomThings.Count == 0) continue;
-                            
-                            var randomThing = randomThings.First(t => party.IndexOf(pet) == t.petTriggerIndex);
-                            var target = party[randomThing.petTargetIndex];
-                            if (target != null)
-                            {
-                                target.CurrentHealth += effect.HealthAmount;
-                                if (!string.IsNullOrEmpty(effect.AttackAmount))
-                                {
-                                    target.CurrentAttack += int.Parse(effect.AttackAmount);
-                                }
-                            }
-                        
-                            await AnimateEffectImageParty(randomThing.petTriggerIndex, randomThing.petTargetIndex, "1f354");
-                            randomThings.Remove(randomThing);
-                            Battler.instance.UpdateParty(party);
-                            await Task.Delay(200).ConfigureAwait(false);
-                        }
-                    }
+                    await DoModifyEffect(pet, party, randomThings);
                 } else if (ability.Effect.Kind == "GainGold")
                 {
                     Battler.instance.coins += Convert.ToInt32(ability.Effect.Amount);
@@ -436,10 +410,66 @@ public static class BattleHelper
             }
         }
 
+
         party[party.IndexOf(pet)] = null;
         Battler.instance.UpdateParty(party);
         
+
         await Task.Delay(200).ConfigureAwait(false);
+    }
+
+    public static async Task DoBuyEffect(Pet? pet, IList<Pet?> party, IList<Battler.RandomThing?> randomThings)
+    {
+        var ability = pet.Ability;
+        if (ability != null && ability.Trigger is Trigger.Buy)
+        {
+            if (ability.TriggeredBy.Kind == "Self")
+            {
+                if (ability.Effect.Kind == "ModifyStats")
+                {
+                    await DoModifyEffect(pet, party, randomThings, false);
+                }
+            }
+        }
+        
+        Battler.instance.UpdateParty(party);
+        
+
+        await Task.Delay(200).ConfigureAwait(false);
+    }
+
+    public static async Task DoModifyEffect(Pet? pet,IList<Pet> party,IList<Battler.RandomThing?> randomThings, bool modifyPet= true)
+    {
+
+        if (pet == null) return;
+        
+        var ability = pet.Ability;
+        if(ability == null) return;
+        
+        var effect = ability.Effect;
+        if (effect.Target.Kind == "RandomFriend")
+        {
+            for (var i = 0; i < effect.Target.N; i++)
+            {
+                if (randomThings.Count == 0) continue;
+                            
+                var randomThing = randomThings.First(t => party.IndexOf(pet) == t.petTriggerIndex);
+                var target = party[randomThing.petTargetIndex];
+                if (target != null && modifyPet)
+                {
+                    target.CurrentHealth += effect.HealthAmount;
+                    if (!string.IsNullOrEmpty(effect.AttackAmount))
+                    {
+                        target.CurrentAttack += int.Parse(effect.AttackAmount);
+                    }
+                }
+                        
+                await AnimateEffectImageParty(randomThing.petTriggerIndex, randomThing.petTargetIndex, "1f354");
+                randomThings.Remove(randomThing);
+                Battler.instance.UpdateParty(party);
+                await Task.Delay(200).ConfigureAwait(false);
+            }
+        }
     }
 
     public static void MovePetsForward(LinkedList<Pet?> party1, LinkedList<Pet?> party2)

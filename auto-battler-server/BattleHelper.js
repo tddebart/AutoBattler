@@ -204,33 +204,61 @@ function DoSellEffect(pet,user) {
     if (ability != null && ability.trigger === "Sell") {
         if (ability.triggeredBy.kind === "Self") {
             if (ability.effect.kind === "ModifyStats") {
-                let effect = ability.effect;
-                if (effect.target.kind === "RandomFriend") {
-                    for (let i = 0; i < effect.target.n; i++) {
-                        let count = 0;
-                        let randomPet = party[Math.floor(Math.random() * (party.length))];
-                        while ( (randomPet == null || randomPet === pet || randomPet.currentHealth <= 0) && count < 10) {
-                            randomPet = party[Math.floor(Math.random() * (party.length))];
-                            count++;
-                        }
-                        if (count >= 10) {
-                            continue;
-                        }
-                        currentRandomThings.push({
-                            petTrigger: party.indexOf(pet),
-                            petTarget: party.indexOf(randomPet),
-                            abilityTrigger: ability.trigger
-                        })
-                        ModifyStats(randomPet, effect);
-                    }
-                } else if (effect.target.kind === "EachShopAnimal") {
-                    for (let i = 0; i < shopPets.length; i++) {
-                        ModifyStats(shopPets[i], effect);
-                    }
-                }
+                currentRandomThings.concat(DoModifyStats(pet,user));
             } else if (ability.effect.kind === "GainGold") {
                 user.coins += ability.effect.amount;
             }
+        }
+    }
+    
+    return currentRandomThings;
+}
+
+function DoBuyEffect(pet,user) {
+    const party = user.partyPets;
+    
+    let currentRandomThings = [];
+    let ability = GetAbility(pet);
+    if (ability != null && ability.trigger === "Buy") {
+        if (ability.triggeredBy.kind === "Self") {
+            if (ability.effect.kind === "ModifyStats") {
+                let randomThings = DoModifyStats(pet,user);
+                currentRandomThings = currentRandomThings.concat(randomThings);
+            }
+        }
+    }
+    
+    return currentRandomThings;
+}
+    
+function DoModifyStats(pet,user) {
+    let currentRandomThings = [];
+    const party = user.partyPets;
+    const shopPets = user.shopPets;
+    const ability = GetAbility(pet);
+    const effect = ability.effect;
+    
+    if (effect.target.kind === "RandomFriend") {
+        for (let i = 0; i < effect.target.n; i++) {
+            let count = 0;
+            let randomPet = party[Math.floor(Math.random() * (party.length))];
+            while ( (randomPet == null || randomPet === pet || randomPet.currentHealth <= 0) && count < 10) {
+                randomPet = party[Math.floor(Math.random() * (party.length))];
+                count++;
+            }
+            if (count >= 10) {
+                continue;
+            }
+            currentRandomThings.push({
+                petTrigger: party.indexOf(pet),
+                petTarget: party.indexOf(randomPet),
+                abilityTrigger: ability.trigger
+            })
+            ModifyStats(randomPet, effect);
+        }
+    } else if (effect.target.kind === "EachShopAnimal") {
+        for (let i = 0; i < shopPets.length; i++) {
+            ModifyStats(shopPets[i], effect);
         }
     }
     
@@ -280,4 +308,5 @@ function AreAllPetsDead(party) {
 module.exports = {
     SimulateBattle: SimulateBattle,
     DoSellEffect: DoSellEffect,
+    DoBuyEffect: DoBuyEffect,
 }

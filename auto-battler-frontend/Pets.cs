@@ -1,7 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
@@ -175,7 +172,7 @@ public class Pet
                 1 => Level1Ability,
                 2 => Level2Ability,
                 3 => Level3Ability,
-                _ => Level1Ability
+                _ => null
             };
         }
     }

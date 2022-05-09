@@ -17,7 +17,8 @@ const {
 
 const {
     SimulateBattle,
-    DoSellEffect
+    DoSellEffect,
+    DoBuyEffect,
 } = require('./BattleHelper')
 const app = express();
 const server = http.createServer(app);
@@ -82,19 +83,31 @@ io.on('connection', socket => {
                 user.coins -= 3;
                 
                 MergePets(-1, partyIndex,user.shopPets[shopIndex], user.partyPets[partyIndex], user);
+
+                let currentRandomThings = DoBuyEffect(user.partyPets[partyIndex], user);
                 
                 user.shopPets[shopIndex] = null;
                 socket.emit('receiveShop', JSON.stringify(user.shopPets));
                 socket.emit('receiveParty', JSON.stringify(user.partyPets));
+                socket.emit('buySuccess', JSON.stringify({
+                    randomThings: currentRandomThings,
+                    buyIndex: partyIndex
+                }))
             } 
             else 
             {
                 user.partyPets[partyIndex] = user.shopPets[shopIndex];
                 user.shopPets[shopIndex] = null;
                 user.coins -= 3;
+
+                let currentRandomThings = DoBuyEffect(user.partyPets[partyIndex], user);
                 
                 socket.emit('receiveParty', JSON.stringify(user.partyPets));
                 socket.emit('receiveShop', JSON.stringify(user.shopPets));
+                socket.emit('buySuccess', JSON.stringify({
+                    randomThings: currentRandomThings,
+                    buyIndex: partyIndex
+                }))
             }
             
         }
@@ -137,7 +150,7 @@ io.on('connection', socket => {
             console.log(`${user.username} sold ${user.partyPets[index].name}`);
             user.coins += user.partyPets[index].level;
             
-            let currentRandomThings = DoSellEffect(user.partyPets[index], user.partyPets, user.shopPets);
+            let currentRandomThings = DoSellEffect(user.partyPets[index], user);
             let soldPet = JSON.parse(JSON.stringify(user.partyPets[index]));
             
             user.partyPets[index] = null;
