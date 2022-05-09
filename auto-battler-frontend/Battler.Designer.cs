@@ -62,14 +62,16 @@ namespace auto_battler_frontend
             this.battleOpLevel2 = new auto_battler_frontend.PetLevel();
             this.battleOpLevel1 = new auto_battler_frontend.PetLevel();
             this.battleLevel5 = new auto_battler_frontend.PetLevel();
+            this.effectImage = new System.Windows.Forms.PictureBox();
             this.battleLevel4 = new auto_battler_frontend.PetLevel();
             this.battleLevel3 = new auto_battler_frontend.PetLevel();
             this.battleLevel2 = new auto_battler_frontend.PetLevel();
             this.battleLevel1 = new auto_battler_frontend.PetLevel();
-            this.effectImage = new System.Windows.Forms.PictureBox();
             this.party1DamageText = new System.Windows.Forms.Label();
             this.party2DamageText = new System.Windows.Forms.Label();
             this.partyPanel = new System.Windows.Forms.Panel();
+            this.turnLabel = new System.Windows.Forms.Label();
+            this.effectImageParty = new System.Windows.Forms.PictureBox();
             this.partyLevel5 = new auto_battler_frontend.PetLevel();
             this.partyLevel4 = new auto_battler_frontend.PetLevel();
             this.partyLevel3 = new auto_battler_frontend.PetLevel();
@@ -79,13 +81,12 @@ namespace auto_battler_frontend
             this.shopPanel = new System.Windows.Forms.Panel();
             this.sellButton = new System.Windows.Forms.Button();
             this.petHoverInfo = new auto_battler_frontend.PetHoverInfo();
-            this.effectImageParty = new System.Windows.Forms.PictureBox();
             this.party1.SuspendLayout();
             this.battlePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.effectImage)).BeginInit();
             this.partyPanel.SuspendLayout();
-            this.shopPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.effectImageParty)).BeginInit();
+            this.shopPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // roomCodeLabel
@@ -321,6 +322,7 @@ namespace auto_battler_frontend
             // 
             // battleOpLevel5
             // 
+            this.battleOpLevel5.BackColor = System.Drawing.SystemColors.Control;
             this.battleOpLevel5.Location = new System.Drawing.Point(1345, 170);
             this.battleOpLevel5.Name = "battleOpLevel5";
             this.battleOpLevel5.Size = new System.Drawing.Size(90, 60);
@@ -328,6 +330,7 @@ namespace auto_battler_frontend
             // 
             // battleOpLevel4
             // 
+            this.battleOpLevel4.BackColor = System.Drawing.SystemColors.Control;
             this.battleOpLevel4.Location = new System.Drawing.Point(1216, 170);
             this.battleOpLevel4.Name = "battleOpLevel4";
             this.battleOpLevel4.Size = new System.Drawing.Size(90, 60);
@@ -335,6 +338,7 @@ namespace auto_battler_frontend
             // 
             // battleOpLevel3
             // 
+            this.battleOpLevel3.BackColor = System.Drawing.SystemColors.Control;
             this.battleOpLevel3.Location = new System.Drawing.Point(1085, 170);
             this.battleOpLevel3.Name = "battleOpLevel3";
             this.battleOpLevel3.Size = new System.Drawing.Size(90, 60);
@@ -342,6 +346,7 @@ namespace auto_battler_frontend
             // 
             // battleOpLevel2
             // 
+            this.battleOpLevel2.BackColor = System.Drawing.SystemColors.Control;
             this.battleOpLevel2.Location = new System.Drawing.Point(954, 170);
             this.battleOpLevel2.Name = "battleOpLevel2";
             this.battleOpLevel2.Size = new System.Drawing.Size(90, 60);
@@ -349,6 +354,7 @@ namespace auto_battler_frontend
             // 
             // battleOpLevel1
             // 
+            this.battleOpLevel1.BackColor = System.Drawing.SystemColors.Control;
             this.battleOpLevel1.Location = new System.Drawing.Point(823, 170);
             this.battleOpLevel1.Name = "battleOpLevel1";
             this.battleOpLevel1.Size = new System.Drawing.Size(90, 60);
@@ -356,38 +362,11 @@ namespace auto_battler_frontend
             // 
             // battleLevel5
             // 
+            this.battleLevel5.BackColor = System.Drawing.SystemColors.Control;
             this.battleLevel5.Location = new System.Drawing.Point(57, 170);
             this.battleLevel5.Name = "battleLevel5";
             this.battleLevel5.Size = new System.Drawing.Size(90, 60);
             this.battleLevel5.TabIndex = 35;
-            // 
-            // battleLevel4
-            // 
-            this.battleLevel4.Location = new System.Drawing.Point(188, 170);
-            this.battleLevel4.Name = "battleLevel4";
-            this.battleLevel4.Size = new System.Drawing.Size(90, 60);
-            this.battleLevel4.TabIndex = 34;
-            // 
-            // battleLevel3
-            // 
-            this.battleLevel3.Location = new System.Drawing.Point(319, 170);
-            this.battleLevel3.Name = "battleLevel3";
-            this.battleLevel3.Size = new System.Drawing.Size(90, 60);
-            this.battleLevel3.TabIndex = 33;
-            // 
-            // battleLevel2
-            // 
-            this.battleLevel2.Location = new System.Drawing.Point(450, 170);
-            this.battleLevel2.Name = "battleLevel2";
-            this.battleLevel2.Size = new System.Drawing.Size(90, 60);
-            this.battleLevel2.TabIndex = 32;
-            // 
-            // battleLevel1
-            // 
-            this.battleLevel1.Location = new System.Drawing.Point(581, 170);
-            this.battleLevel1.Name = "battleLevel1";
-            this.battleLevel1.Size = new System.Drawing.Size(90, 60);
-            this.battleLevel1.TabIndex = 31;
             // 
             // effectImage
             // 
@@ -399,6 +378,38 @@ namespace auto_battler_frontend
             this.effectImage.TabIndex = 23;
             this.effectImage.TabStop = false;
             this.effectImage.Visible = false;
+            // 
+            // battleLevel4
+            // 
+            this.battleLevel4.BackColor = System.Drawing.SystemColors.Control;
+            this.battleLevel4.Location = new System.Drawing.Point(188, 170);
+            this.battleLevel4.Name = "battleLevel4";
+            this.battleLevel4.Size = new System.Drawing.Size(90, 60);
+            this.battleLevel4.TabIndex = 34;
+            // 
+            // battleLevel3
+            // 
+            this.battleLevel3.BackColor = System.Drawing.SystemColors.Control;
+            this.battleLevel3.Location = new System.Drawing.Point(319, 170);
+            this.battleLevel3.Name = "battleLevel3";
+            this.battleLevel3.Size = new System.Drawing.Size(90, 60);
+            this.battleLevel3.TabIndex = 33;
+            // 
+            // battleLevel2
+            // 
+            this.battleLevel2.BackColor = System.Drawing.SystemColors.Control;
+            this.battleLevel2.Location = new System.Drawing.Point(450, 170);
+            this.battleLevel2.Name = "battleLevel2";
+            this.battleLevel2.Size = new System.Drawing.Size(90, 60);
+            this.battleLevel2.TabIndex = 32;
+            // 
+            // battleLevel1
+            // 
+            this.battleLevel1.BackColor = System.Drawing.SystemColors.Control;
+            this.battleLevel1.Location = new System.Drawing.Point(581, 170);
+            this.battleLevel1.Name = "battleLevel1";
+            this.battleLevel1.Size = new System.Drawing.Size(90, 60);
+            this.battleLevel1.TabIndex = 31;
             // 
             // party1DamageText
             // 
@@ -428,6 +439,7 @@ namespace auto_battler_frontend
             // 
             // partyPanel
             // 
+            this.partyPanel.Controls.Add(this.turnLabel);
             this.partyPanel.Controls.Add(this.effectImageParty);
             this.partyPanel.Controls.Add(this.partyLevel5);
             this.partyPanel.Controls.Add(this.partyLevel4);
@@ -445,8 +457,29 @@ namespace auto_battler_frontend
             this.partyPanel.Size = new System.Drawing.Size(795, 385);
             this.partyPanel.TabIndex = 18;
             // 
+            // turnLabel
+            // 
+            this.turnLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.turnLabel.Location = new System.Drawing.Point(656, 5);
+            this.turnLabel.Name = "turnLabel";
+            this.turnLabel.Size = new System.Drawing.Size(136, 54);
+            this.turnLabel.TabIndex = 41;
+            this.turnLabel.Text = "Turn 1";
+            // 
+            // effectImageParty
+            // 
+            this.effectImageParty.BackColor = System.Drawing.Color.Transparent;
+            this.effectImageParty.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.effectImageParty.Location = new System.Drawing.Point(45, 74);
+            this.effectImageParty.Name = "effectImageParty";
+            this.effectImageParty.Size = new System.Drawing.Size(75, 75);
+            this.effectImageParty.TabIndex = 40;
+            this.effectImageParty.TabStop = false;
+            this.effectImageParty.Visible = false;
+            // 
             // partyLevel5
             // 
+            this.partyLevel5.BackColor = System.Drawing.SystemColors.Control;
             this.partyLevel5.Location = new System.Drawing.Point(10, 155);
             this.partyLevel5.Name = "partyLevel5";
             this.partyLevel5.Size = new System.Drawing.Size(90, 60);
@@ -455,6 +488,7 @@ namespace auto_battler_frontend
             // 
             // partyLevel4
             // 
+            this.partyLevel4.BackColor = System.Drawing.SystemColors.Control;
             this.partyLevel4.Location = new System.Drawing.Point(166, 155);
             this.partyLevel4.Name = "partyLevel4";
             this.partyLevel4.Size = new System.Drawing.Size(90, 60);
@@ -463,6 +497,7 @@ namespace auto_battler_frontend
             // 
             // partyLevel3
             // 
+            this.partyLevel3.BackColor = System.Drawing.SystemColors.Control;
             this.partyLevel3.Location = new System.Drawing.Point(322, 155);
             this.partyLevel3.Name = "partyLevel3";
             this.partyLevel3.Size = new System.Drawing.Size(90, 60);
@@ -471,6 +506,7 @@ namespace auto_battler_frontend
             // 
             // partyLevel2
             // 
+            this.partyLevel2.BackColor = System.Drawing.SystemColors.Control;
             this.partyLevel2.Location = new System.Drawing.Point(478, 155);
             this.partyLevel2.Name = "partyLevel2";
             this.partyLevel2.Size = new System.Drawing.Size(90, 60);
@@ -479,6 +515,7 @@ namespace auto_battler_frontend
             // 
             // partyLevel1
             // 
+            this.partyLevel1.BackColor = System.Drawing.SystemColors.Control;
             this.partyLevel1.Location = new System.Drawing.Point(631, 155);
             this.partyLevel1.Name = "partyLevel1";
             this.partyLevel1.Size = new System.Drawing.Size(90, 60);
@@ -529,17 +566,6 @@ namespace auto_battler_frontend
             this.petHoverInfo.TabIndex = 20;
             this.petHoverInfo.Visible = false;
             // 
-            // effectImageParty
-            // 
-            this.effectImageParty.BackColor = System.Drawing.Color.Transparent;
-            this.effectImageParty.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.effectImageParty.Location = new System.Drawing.Point(631, 25);
-            this.effectImageParty.Name = "effectImageParty";
-            this.effectImageParty.Size = new System.Drawing.Size(75, 75);
-            this.effectImageParty.TabIndex = 40;
-            this.effectImageParty.TabStop = false;
-            this.effectImageParty.Visible = false;
-            // 
             // Battler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -558,10 +584,12 @@ namespace auto_battler_frontend
             this.battlePanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.effectImage)).EndInit();
             this.partyPanel.ResumeLayout(false);
-            this.shopPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.effectImageParty)).EndInit();
+            this.shopPanel.ResumeLayout(false);
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.Label turnLabel;
 
         public System.Windows.Forms.PictureBox effectImageParty;
 

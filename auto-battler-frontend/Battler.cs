@@ -28,6 +28,7 @@ namespace auto_battler_frontend
         public Pet?[] partyPets = new Pet[5];
 
         public int coins = 10;
+        public int turn = 1;
 
         public static Battler instance;
         
@@ -137,6 +138,9 @@ namespace auto_battler_frontend
                 battlePanel.Invoke((Action)(() => battlePanel.Show()));
                 readyButton.Invoke((Action)(() => readyButton.Hide()));
 
+                turn++;
+                turnLabel.Invoke((Action)(() => turnLabel.Text = $"Turn {turn}"));
+
                 BattleHelper.AnimateBattle(pets, oppPets, party1RandomThings, party2RandomThings);
             });
             
@@ -194,7 +198,7 @@ namespace auto_battler_frontend
             };
         }
 
-        public void MakePets(IList<Pet?> pets, string controllerPrefix, Action<Control, int>? labelClickEvent = null, float fontSize = 17f, bool rightSide = false)
+        public void MakePets(IList<Pet?> pets, string controllerPrefix, Action<Control, int>? labelClickEvent = null, float fontSize = 16f, bool rightSide = false)
         {
             for (var i = 1; i < 6; i++)
             {
@@ -379,7 +383,7 @@ namespace auto_battler_frontend
                 });
         }
 
-        public System.Drawing.Image GetImage(string unicodeCharacter, Control sizeReference, bool rightSide = false)
+        public System.Drawing.Image? GetImage(string unicodeCharacter, Control sizeReference, bool rightSide = false)
         {
             var x = unicodeCharacter[0];
             var y = unicodeCharacter[1];
@@ -390,6 +394,11 @@ namespace auto_battler_frontend
             var L = uint.Parse(surrogateHexString.Substring(4, 4), NumberStyles.HexNumber);
 
             var unicodeHexCode = (((H - 0xD800) * 0x400) + (L - 0xDC00) + 0x10000).ToString("X");
+            
+            if(Resources.ResourceManager.GetObject($"emoji_u{unicodeHexCode.ToLower()}") == null)
+            {
+                return null;
+            }
 
             var image = Resources.ResourceManager.GetObject($"emoji_u{unicodeHexCode.ToLower()}") as System.Drawing.Image;
             image = new Bitmap(image, new Size(sizeReference.Size.Width, sizeReference.Size.Height));

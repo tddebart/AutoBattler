@@ -206,6 +206,7 @@ io.on('connection', socket => {
                 user.coins = 13;
                 opponent.ready = false;
                 opponent.coins = 13;
+                user.turn++;
             }
             
             if(opponent == null) {
@@ -225,6 +226,7 @@ io.on('connection', socket => {
                 user.ready = false;
                 
                 user.coins = 13;
+                user.turn++;
             }
         }
     });

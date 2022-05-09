@@ -38,6 +38,7 @@ class User {
     this.shopPets = [];
     this.partyPets = [];
     this.coins = 13;
+    this.turn = 1;
   }
 }
 
