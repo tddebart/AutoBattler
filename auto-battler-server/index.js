@@ -182,7 +182,7 @@ io.on('connection', socket => {
                 console.log(`${user.username} and ${opponent.username} are ready to battle!`);
                 
                 
-                var randomThings = SimulateBattle(user, opponent);
+                let randomThings = SimulateBattle(user, opponent);
                 
                 
                 // Send party to user with socket id
@@ -190,13 +190,13 @@ io.on('connection', socket => {
                 socket.broadcast.to(user.room).emit('receiveParty', JSON.stringify(opponent.partyPets));
                 socket.emit('battleStarted', JSON.stringify({
                     oppPets: opponent.partyPets,
-                    party1RandomThings: randomThings.party1RandomThings,
-                    party2RandomThings: randomThings.party2RandomThings
+                    party1RandomThings: randomThings.party1,
+                    party2RandomThings: randomThings.party2
                 }));
                 socket.broadcast.to(user.room).emit('battleStarted', JSON.stringify({
                     oppPets: user.partyPets,
-                    party1RandomThings: randomThings.party2RandomThings,
-                    party2RandomThings: randomThings.party1RandomThings
+                    party1RandomThings: randomThings.party2,
+                    party2RandomThings: randomThings.party1
                 }));
 
 

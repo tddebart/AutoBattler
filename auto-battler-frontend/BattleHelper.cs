@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using auto_battler_frontend;
 using pokemon_frontend.Properties;
 using VisualEffects;
@@ -17,7 +18,7 @@ public static class BattleHelper
     public static List<Battler.RandomThing?> party1RandomThings;
     public static List<Battler.RandomThing?> party2RandomThings;
 
-    public static async void AnimateBattle(LinkedList<Pet?> party1Arg, LinkedList<Pet?> party2Arg, List<Battler.RandomThing?> party1RandomThingsArg, List<Battler.RandomThing?> party2RandomThingsArg)
+    public static async void AnimateBattle(LinkedList<Pet?> party1Arg, LinkedList<Pet?> party2Arg, List<Battler.RandomThing?>? party1RandomThingsArg, List<Battler.RandomThing?>? party2RandomThingsArg)
     {
         var battler = Battler.instance;
         var battle1 = Battler.instance.battle1;
@@ -25,8 +26,8 @@ public static class BattleHelper
         
         party1 = party1Arg;
         party2 = party2Arg;
-        party1RandomThings = party1RandomThingsArg;
-        party2RandomThings = party2RandomThingsArg;
+        party1RandomThings = party1RandomThingsArg ?? new List<Battler.RandomThing?>();
+        party2RandomThings = party2RandomThingsArg ?? new List<Battler.RandomThing?>();
         
         var count = 0;
         while (!AreAllPetsDead(party1) && !AreAllPetsDead(party2) && count < 100)
@@ -107,6 +108,13 @@ public static class BattleHelper
             battler.coinText.Text = $"Coins: {battler.coins}";
         }));
         
+        battler.readyButton.Invoke( (Action)(() =>
+        {
+            battler.readyButton.BackColor = Control.DefaultBackColor;
+            battler.readyButton.Enabled = true;
+            battler.readyButton.Show();
+            battler.readyButton.Focus();
+        }));
         battler.partyPanel.Invoke((Action)(() => battler.partyPanel.Show()));
         battler.shopPanel.Invoke((Action)(() => battler.shopPanel.Show()));
         battler.battlePanel.Invoke((Action)(() => battler.battlePanel.Hide()));
@@ -399,6 +407,7 @@ public static class BattleHelper
         {
             if (ability.TriggeredBy.Kind == "Self")
             {
+                Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Hide()));
                 if (ability.Effect.Kind == "ModifyStats")
                 {
                     await DoModifyEffect(pet, party, randomThings);
@@ -416,6 +425,7 @@ public static class BattleHelper
         
 
         await Task.Delay(200).ConfigureAwait(false);
+        Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Show()));
     }
 
     public static async Task DoBuyEffect(Pet? pet, IList<Pet?> party, IList<Battler.RandomThing?> randomThings)
@@ -425,6 +435,7 @@ public static class BattleHelper
         {
             if (ability.TriggeredBy.Kind == "Self")
             {
+                Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Hide()));
                 if (ability.Effect.Kind == "ModifyStats")
                 {
                     await DoModifyEffect(pet, party, randomThings, false);
@@ -436,6 +447,7 @@ public static class BattleHelper
         
 
         await Task.Delay(200).ConfigureAwait(false);
+        Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Show()));
     }
 
     public static async Task DoLevelUpEffect(Pet? pet, IList<Pet?> party)
@@ -445,12 +457,15 @@ public static class BattleHelper
         {
             if (ability.TriggeredBy.Kind == "Self")
             {
+                Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Hide()));
                 if (ability.Effect.Kind == "ModifyStats")
                 {
                     await DoModifyEffect(pet, party, null, false);
                 }
             }
         }
+        
+        Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Show()));
     }
 
     public static async Task DoModifyEffect(Pet? pet,IList<Pet> party,IList<Battler.RandomThing?> randomThings, bool modifyPet= true)

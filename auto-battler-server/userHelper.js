@@ -1,6 +1,6 @@
 const users = [];
 
-// Join user to chat
+// Create a new user
 function newUser(id, username, room) {
   const user = new User(id, username, room);
 
@@ -14,7 +14,7 @@ function getUser(id) {
   return users.find(user => user.id === id);
 }
 
-// User leaves chat
+// User leaves
 function exitRoom(id) {
   const index = users.findIndex(user => user.id === id);
 

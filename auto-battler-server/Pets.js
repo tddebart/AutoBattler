@@ -43,8 +43,6 @@ function GetRandomPet() {
         Init();
     }
     
-    var array = [];
-    
     let filteredPets = info.pets.filter(pet => pet.tier === 1 && pet.packs.includes('StandardPack'));
     
     let randomPet = filteredPets[Math.floor(Math.random() * filteredPets.length)];
@@ -92,7 +90,6 @@ function CheckExperience(user, pet) {
                 DoLevelUpEffect(pet, user);
                 didLevelUp = true;
                 pet.level = 2;
-                //CheckExperience(pet);
             }
             break;
         case 2:

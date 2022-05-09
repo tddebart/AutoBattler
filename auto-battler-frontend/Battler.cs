@@ -104,7 +104,7 @@ namespace auto_battler_frontend
                 UpdateParty(pets);
             });
 
-            void BattleStarted(SocketIOResponse response)
+            client.On("battleStarted", (response) =>
             {
                 var pets = new LinkedList<Pet?>((Pet[])partyPets.Clone());
                 var info = JsonConvert.DeserializeObject(response.GetValue<string>(), new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include });
@@ -113,8 +113,8 @@ namespace auto_battler_frontend
                 
                 var oppPetsArr = (info as JObject).GetValue("oppPets").ToArray().Select(p => p.ToObject<Pet?>()).ToArray();
                 
-                var party1RandomThings = (info as JObject).GetValue("party1RandomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
-                var party2RandomThings = (info as JObject).GetValue("party2RandomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
+                var party1RandomThings = (info as JObject)?.GetValue("party1RandomThings")?.ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
+                var party2RandomThings = (info as JObject)?.GetValue("party2RandomThings")?.ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
                 
 
                 if (oppPetsArr == null) return;
@@ -135,11 +135,10 @@ namespace auto_battler_frontend
                 partyPanel.Invoke((Action)(() => partyPanel.Hide()));
                 shopPanel.Invoke((Action)(() => shopPanel.Hide()));
                 battlePanel.Invoke((Action)(() => battlePanel.Show()));
+                readyButton.Invoke((Action)(() => readyButton.Hide()));
 
                 BattleHelper.AnimateBattle(pets, oppPets, party1RandomThings, party2RandomThings);
-            }
-
-            client.On("battleStarted", BattleStarted);
+            });
             
             client.On("soldSuccess", async(response) =>
             {
@@ -151,10 +150,9 @@ namespace auto_battler_frontend
                 var soldPet = partyPets[soldIndex ?? -1];
                 
                 var randomThings = (info as JObject).GetValue("randomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
-
-                shopPanel.Invoke((Action)(() => shopPanel.Hide()));
+                
                 await BattleHelper.DoSellEffect(soldPet, partyPets, randomThings);
-                shopPanel.Invoke((Action)(() => shopPanel.Show()));
+                UpdateParty(partyPets);
             });
 
             client.On("buySuccess", async (response) =>
@@ -169,9 +167,7 @@ namespace auto_battler_frontend
                 
                 var randomThings = (info as JObject).GetValue("randomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
                 
-                shopPanel.Invoke((Action)(() => shopPanel.Hide()));
                 await BattleHelper.DoBuyEffect(boughtPet, partyPets, randomThings);
-                shopPanel.Invoke((Action)(() => shopPanel.Show()));
             });
 
             client.On("mergeSuccess", async (response) =>
@@ -186,9 +182,7 @@ namespace auto_battler_frontend
 
                 if (didLevelUp.Value)
                 {
-                    shopPanel.Invoke((Action)(() => shopPanel.Hide()));
                     await BattleHelper.DoLevelUpEffect(partyPets[mergeIndex ?? -1], partyPets);
-                    shopPanel.Invoke((Action)(() => shopPanel.Show()));
                 }
             });
 
@@ -414,7 +408,7 @@ namespace auto_battler_frontend
                 var petContainer = Controls.Find("party" + i, true).First();
 
                 var index = i;
-                petContainer.Click += async(sender, args) =>
+                petContainer.Click += async(_, _) =>
                 {
                     if (selectedPartyIndex == -1 && selectedShopIndex != -1 &&shopPets[selectedShopIndex] != null)
                     {
@@ -483,6 +477,8 @@ namespace auto_battler_frontend
         private void readyButton_Click(object sender, EventArgs e)
         {
             client.EmitAsync("ready");
+            readyButton.BackColor = Color.Green;
+            readyButton.Enabled = false;
         }
         
         private void sellButton_Click(object sender, EventArgs e)

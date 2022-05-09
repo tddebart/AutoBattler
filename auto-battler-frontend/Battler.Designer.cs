@@ -615,7 +615,7 @@ namespace auto_battler_frontend
         private System.Windows.Forms.Panel battle4;
         public System.Windows.Forms.Panel battleOp1;
 
-        private System.Windows.Forms.Button readyButton;
+        public System.Windows.Forms.Button readyButton;
 
         private System.Windows.Forms.Panel shop1;
         private System.Windows.Forms.Panel shop2;
