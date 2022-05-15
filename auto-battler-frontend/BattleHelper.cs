@@ -13,12 +13,12 @@ using VisualEffects.Easing;
 
 public static class BattleHelper
 {
-    public static LinkedList<Pet?> party1;
-    public static LinkedList<Pet?> party2;
-    public static List<Battler.RandomThing?> party1RandomThings;
-    public static List<Battler.RandomThing?> party2RandomThings;
+    private static LinkedList<Pet?>? party1;
+    private static LinkedList<Pet?>? party2;
+    private static List<Battler.RandomEffect?>? party1RandomEffects;
+    private static List<Battler.RandomEffect?>? party2RandomEffects;
 
-    public static async void AnimateBattle(LinkedList<Pet?> party1Arg, LinkedList<Pet?> party2Arg, List<Battler.RandomThing?>? party1RandomThingsArg, List<Battler.RandomThing?>? party2RandomThingsArg)
+    public static async void AnimateBattle(LinkedList<Pet?> party1Arg, LinkedList<Pet?> party2Arg, List<Battler.RandomEffect?>? party1RandomEffectsArg, List<Battler.RandomEffect?>? party2RandomEffectsArg)
     {
         var battler = Battler.instance;
         var battle1 = Battler.instance.battle1;
@@ -26,8 +26,8 @@ public static class BattleHelper
         
         party1 = party1Arg;
         party2 = party2Arg;
-        party1RandomThings = party1RandomThingsArg ?? new List<Battler.RandomThing?>();
-        party2RandomThings = party2RandomThingsArg ?? new List<Battler.RandomThing?>();
+        party1RandomEffects = party1RandomEffectsArg ?? new List<Battler.RandomEffect?>();
+        party2RandomEffects = party2RandomEffectsArg ?? new List<Battler.RandomEffect?>();
         
         var count = 0;
         while (!AreAllPetsDead(party1) && !AreAllPetsDead(party2) && count < 100)
@@ -39,8 +39,8 @@ public static class BattleHelper
             
             if (count == 0)
             {
-                await DoStartBattleEffects(party1.ToArray(),party2.ToArray(),party1RandomThings, true);
-                await DoStartBattleEffects(party2.ToArray(),party1.ToArray(),party2RandomThings, false);
+                await DoStartBattleEffects(party1.ToArray(),party2.ToArray(),party1RandomEffects, true);
+                await DoStartBattleEffects(party2.ToArray(),party1.ToArray(),party2RandomEffects, false);
 
                 UpdateVisuals();
             
@@ -98,6 +98,16 @@ public static class BattleHelper
             
             count++;
         }
+        
+        var didWeWin = AreAllPetsDead(party1);
+        var didWeLose = AreAllPetsDead(party2);
+        var didWeTie = didWeWin && didWeLose;
+        
+        battler.winText.Invoke((Action)(() =>
+        {
+            battler.winText.Visible = true;
+            battler.winText.Text = didWeTie ? "Draw" : didWeWin ? "You Win!" : "You Lose!";
+        }));
 
         await Task.Delay(2000).ConfigureAwait(false);
 
@@ -118,6 +128,7 @@ public static class BattleHelper
         battler.partyPanel.Invoke((Action)(() => battler.partyPanel.Show()));
         battler.shopPanel.Invoke((Action)(() => battler.shopPanel.Show()));
         battler.battlePanel.Invoke((Action)(() => battler.battlePanel.Hide()));
+        battler.winText.Invoke((Action)(() => battler.winText.Hide()));
 
         party1 = null;
         party2 = null;
@@ -125,9 +136,11 @@ public static class BattleHelper
 
     public static async Task CheckDeath()
     {
+        if(party1 == null || party2 == null) return;
+        
         foreach (var pet in party1.ToArray())
         {
-            var shouldRemove = await CheckForDeadEffects(pet,party1, party1RandomThings, true);
+            var shouldRemove = await CheckForDeadEffects(pet,party1, party1RandomEffects, true);
             if (shouldRemove && pet != null && pet.CurrentHealth <= 0)
             {
                 party1.Remove(pet);
@@ -137,7 +150,7 @@ public static class BattleHelper
             
         foreach (var pet in party2.ToArray())
         {
-            var shouldRemove = await CheckForDeadEffects(pet,party2, party2RandomThings, false);
+            var shouldRemove = await CheckForDeadEffects(pet,party2, party2RandomEffects, false);
             if (shouldRemove && pet != null && pet.CurrentHealth <= 0)
             {
                 party2.Remove(pet);
@@ -152,6 +165,8 @@ public static class BattleHelper
 
     public static void UpdateVisuals()
     {
+        if(party1 == null || party2 == null) return;
+        
         var battler = Battler.instance;
         // battler.ClearControls("battle");
         // battler.ClearControls("battleOp");
@@ -271,7 +286,7 @@ public static class BattleHelper
             ));
     }
 
-    public static async Task<bool> CheckForDeadEffects(Pet? pet, LinkedList<Pet?> partyLinked, List<Battler.RandomThing?> randomThings, bool ourParty)
+    public static async Task<bool> CheckForDeadEffects(Pet? pet, LinkedList<Pet?> partyLinked, List<Battler.RandomEffect?> randomEffects, bool ourParty)
     {
         var shouldRemove = true;
         
@@ -285,18 +300,18 @@ public static class BattleHelper
                 {
                     var effect = ability.Effect;
 
-                    if (effect.Target.Kind == "RandomFriend" && randomThings.Any(t => party.IndexOf(pet) == t.petTriggerIndex && t.abilityTrigger == ability.Trigger))
+                    if (effect.Target.Kind == "RandomFriend" && randomEffects.Any(t => party.IndexOf(pet) == t.petTriggerIndex && t.abilityTrigger == ability.Trigger))
                     {
-                        var randomThing = randomThings.First(t => party.IndexOf(pet) == t.petTriggerIndex);
-                        var target = party[randomThing.petTargetIndex];
+                        var randomEffect = randomEffects.First(t => party.IndexOf(pet) == t.petTriggerIndex);
+                        var target = party[randomEffect.petTargetIndex];
                         if (target != null)
                         {
                             target.CurrentHealth += effect.HealthAmount;
                             target.CurrentAttack += int.Parse(effect.AttackAmount);
                         }
                         
-                        await AnimateEffectImage(randomThing.petTriggerIndex, randomThing.petTargetIndex, ourParty,ourParty, "1f354");
-                        randomThings.Remove(randomThing);
+                        await AnimateEffectImage(randomEffect.petTriggerIndex, randomEffect.petTargetIndex, ourParty,ourParty, "1f354");
+                        randomEffects.Remove(randomEffect);
                         UpdateVisuals();
                         await Task.Delay(200).ConfigureAwait(false);
                     }
@@ -364,7 +379,7 @@ public static class BattleHelper
         }
     }
     
-    public static async Task DoStartBattleEffects(IList<Pet?> party1,IList<Pet?> party2, IList<Battler.RandomThing?> randomThings, bool ourParty)
+    public static async Task DoStartBattleEffects(IList<Pet?> party1,IList<Pet?> party2, IList<Battler.RandomEffect?> randomEffects, bool ourParty)
     {
         foreach (var pet in party1)
         {
@@ -381,13 +396,13 @@ public static class BattleHelper
                     {
                         for (var i = 0; i < effect.Target.N; i++)
                         {
-                            var randomThing = randomThings.First(t => party1.IndexOf(pet) == t.petTriggerIndex && t.abilityTrigger == ability.Trigger);
-                            var target = party2[randomThing.petTargetIndex];
+                            var randomEffect = randomEffects.First(t => party1.IndexOf(pet) == t.petTriggerIndex && t.abilityTrigger == ability.Trigger);
+                            var target = party2[randomEffect.petTargetIndex];
                             if (target != null)
                             {
                                 target.CurrentHealth -= Convert.ToInt32(effect.Amount);
-                                await AnimateEffectImage(randomThing.petTriggerIndex, randomThing.petTargetIndex, ourParty,!ourParty, "1faa8");
-                                randomThings.Remove(randomThing);
+                                await AnimateEffectImage(randomEffect.petTriggerIndex, randomEffect.petTargetIndex, ourParty,!ourParty, "1faa8");
+                                randomEffects.Remove(randomEffect);
                                 UpdateVisuals();
                                 await Task.Delay(200).ConfigureAwait(false);
                             }
@@ -400,7 +415,7 @@ public static class BattleHelper
         await Task.Delay(200).ConfigureAwait(false);
     }
 
-    public static async Task DoSellEffect(Pet? pet, IList<Pet?> party, IList<Battler.RandomThing?> randomThings)
+    public static async Task DoSellEffect(Pet? pet, IList<Pet?> party, IList<Battler.RandomEffect?> randomEffects)
     {
         var ability = pet.Ability;
         if (ability != null && ability.Trigger is Trigger.Sell)
@@ -410,7 +425,7 @@ public static class BattleHelper
                 Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Hide()));
                 if (ability.Effect.Kind == "ModifyStats")
                 {
-                    await DoModifyEffect(pet, party, randomThings);
+                    await DoModifyEffect(pet, party, randomEffects);
                 } else if (ability.Effect.Kind == "GainGold")
                 {
                     Battler.instance.coins += Convert.ToInt32(ability.Effect.Amount);
@@ -428,7 +443,7 @@ public static class BattleHelper
         Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Show()));
     }
 
-    public static async Task DoBuyEffect(Pet? pet, IList<Pet?> party, IList<Battler.RandomThing?> randomThings)
+    public static async Task DoBuyEffect(Pet? pet, IList<Pet?> party, IList<Battler.RandomEffect?> randomEffects)
     {
         var ability = pet.Ability;
         if (ability != null && ability.Trigger is Trigger.Buy)
@@ -438,7 +453,7 @@ public static class BattleHelper
                 Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Hide()));
                 if (ability.Effect.Kind == "ModifyStats")
                 {
-                    await DoModifyEffect(pet, party, randomThings, false);
+                    await DoModifyEffect(pet, party, randomEffects, false);
                 }
             }
         }
@@ -468,7 +483,7 @@ public static class BattleHelper
         Battler.instance.shopPanel.Invoke((Action)(() => Battler.instance.shopPanel.Show()));
     }
 
-    public static async Task DoModifyEffect(Pet? pet,IList<Pet> party,IList<Battler.RandomThing?> randomThings, bool modifyPet= true)
+    public static async Task DoModifyEffect(Pet? pet,IList<Pet> party,IList<Battler.RandomEffect?> randomEffects, bool modifyPet= true)
     {
 
         if (pet == null) return;
@@ -481,10 +496,10 @@ public static class BattleHelper
         {
             for (var i = 0; i < effect.Target.N; i++)
             {
-                if (randomThings.Count == 0) continue;
+                if (randomEffects.Count == 0) continue;
                             
-                var randomThing = randomThings.First(t => party.IndexOf(pet) == t.petTriggerIndex);
-                var target = party[randomThing.petTargetIndex];
+                var randomEffect = randomEffects.First(t => party.IndexOf(pet) == t.petTriggerIndex);
+                var target = party[randomEffect.petTargetIndex];
                 if (target != null && modifyPet)
                 {
                     target.CurrentHealth += effect.HealthAmount;
@@ -494,8 +509,8 @@ public static class BattleHelper
                     }
                 }
                         
-                await AnimateEffectImageParty(randomThing.petTriggerIndex, randomThing.petTargetIndex, "1f354");
-                randomThings.Remove(randomThing);
+                await AnimateEffectImageParty(randomEffect.petTriggerIndex, randomEffect.petTargetIndex, "1f354");
+                randomEffects.Remove(randomEffect);
                 Battler.instance.UpdateParty(party);
                 await Task.Delay(200).ConfigureAwait(false);
             }

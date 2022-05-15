@@ -56,6 +56,7 @@ namespace auto_battler_frontend
             this.battleOp2 = new System.Windows.Forms.Panel();
             this.battleOp1 = new System.Windows.Forms.Panel();
             this.battlePanel = new System.Windows.Forms.Panel();
+            this.winText = new System.Windows.Forms.Label();
             this.battleOpLevel5 = new auto_battler_frontend.PetLevel();
             this.battleOpLevel4 = new auto_battler_frontend.PetLevel();
             this.battleOpLevel3 = new auto_battler_frontend.PetLevel();
@@ -291,6 +292,7 @@ namespace auto_battler_frontend
             // 
             // battlePanel
             // 
+            this.battlePanel.Controls.Add(this.winText);
             this.battlePanel.Controls.Add(this.battleOpLevel5);
             this.battlePanel.Controls.Add(this.battleOpLevel4);
             this.battlePanel.Controls.Add(this.battleOpLevel3);
@@ -319,6 +321,17 @@ namespace auto_battler_frontend
             this.battlePanel.Size = new System.Drawing.Size(1491, 386);
             this.battlePanel.TabIndex = 17;
             this.battlePanel.Visible = false;
+            // 
+            // winText
+            // 
+            this.winText.Font = new System.Drawing.Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.winText.Location = new System.Drawing.Point(617, 282);
+            this.winText.Name = "winText";
+            this.winText.Size = new System.Drawing.Size(267, 128);
+            this.winText.TabIndex = 40;
+            this.winText.Text = "You win";
+            this.winText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.winText.Visible = false;
             // 
             // battleOpLevel5
             // 
@@ -588,6 +601,8 @@ namespace auto_battler_frontend
             this.shopPanel.ResumeLayout(false);
             this.ResumeLayout(false);
         }
+
+        public System.Windows.Forms.Label winText;
 
         private System.Windows.Forms.Label turnLabel;
 

@@ -94,7 +94,7 @@ function MovePetsForward(party1,party2) {
     }
 }
 
-function CheckDeadEffects(pet,party, randomThings) {
+function CheckDeadEffects(pet,party, randomEffects) {
     let shouldRemove = true;
 
     if (pet != null && pet.currentHealth <= 0) {
@@ -112,7 +112,7 @@ function CheckDeadEffects(pet,party, randomThings) {
                         while (randomPet == null || randomPet === pet || randomPet.currentHealth <= 0) {
                             randomPet = party[Math.floor(Math.random() * (party.length ))];
                         }
-                        randomThings.push({
+                        randomEffects.push({
                             petTrigger: party.indexOf(pet),
                             petTarget: party.indexOf(randomPet),
                             abilityTrigger: ability.trigger
@@ -166,7 +166,7 @@ function CheckSummonedEffect(pet,party) {
     }
 }
 
-function DoStartBattleEffects(party1,party2, randomThings) {
+function DoStartBattleEffects(party1,party2, randomEffects) {
     for (let i = 0; i < party1.length; i++) {
         let pet = party1[i];
         if(pet != null) {
@@ -182,7 +182,7 @@ function DoStartBattleEffects(party1,party2, randomThings) {
                                 randomPet = party2[Math.floor(Math.random() * (party2.length))];
                             }
                             
-                            randomThings.push({
+                            randomEffects.push({
                                 petTrigger: party1.indexOf(pet),
                                 petTarget: party2.indexOf(randomPet),
                                 abilityTrigger: ability.trigger
@@ -199,55 +199,55 @@ function DoStartBattleEffects(party1,party2, randomThings) {
 function DoSellEffect(pet,user) {
     const party = user.partyPets;
     const shopPets = user.shopPets;
-    let currentRandomThings = [];
+    let currentRandomEffects = [];
     let ability = GetAbility(pet);
     if (ability != null && ability.trigger === "Sell") {
         if (ability.triggeredBy.kind === "Self") {
             if (ability.effect.kind === "ModifyStats") {
-                currentRandomThings.concat(DoModifyStats(pet,user));
+                currentRandomEffects.concat(DoModifyStats(pet,user));
             } else if (ability.effect.kind === "GainGold") {
                 user.coins += ability.effect.amount;
             }
         }
     }
     
-    return currentRandomThings;
+    return currentRandomEffects;
 }
 
 function DoBuyEffect(pet,user) {
     const party = user.partyPets;
     
-    let currentRandomThings = [];
+    let currentRandomEffects = [];
     let ability = GetAbility(pet);
     if (ability != null && ability.trigger === "Buy") {
         if (ability.triggeredBy.kind === "Self") {
             if (ability.effect.kind === "ModifyStats") {
-                let randomThings = DoModifyStats(pet,user);
-                currentRandomThings = currentRandomThings.concat(randomThings);
+                let randomEffects = DoModifyStats(pet,user);
+                currentRandomEffects = currentRandomEffects.concat(randomEffects);
             }
         }
     }
     
-    return currentRandomThings;
+    return currentRandomEffects;
 }
 
 function DoLevelUpEffect(pet,user) {
     const party = user.partyPets;
     
-    let currentRandomThings = [];
+    let currentRandomEffects = [];
     let ability = GetAbility(pet);
     if (ability != null && ability.trigger === "LevelUp") {
         if (ability.triggeredBy.kind === "Self") {
             if (ability.effect.kind === "ModifyStats") {
-                let randomThings = DoModifyStats(pet, user);
-                currentRandomThings = currentRandomThings.concat(randomThings);
+                let randomEffects = DoModifyStats(pet, user);
+                currentRandomEffects = currentRandomEffects.concat(randomEffects);
             }
         }
     }
 }
     
 function DoModifyStats(pet,user) {
-    let currentRandomThings = [];
+    let currentRandomEffects = [];
     const party = user.partyPets;
     const shopPets = user.shopPets;
     const ability = GetAbility(pet);
@@ -264,7 +264,7 @@ function DoModifyStats(pet,user) {
             if (count >= 10) {
                 continue;
             }
-            currentRandomThings.push({
+            currentRandomEffects.push({
                 petTrigger: party.indexOf(pet),
                 petTarget: party.indexOf(randomPet),
                 abilityTrigger: ability.trigger
@@ -281,7 +281,7 @@ function DoModifyStats(pet,user) {
         }
     }
     
-    return currentRandomThings;
+    return currentRandomEffects;
 }
 
 function ModifyStats(pet, effect) {

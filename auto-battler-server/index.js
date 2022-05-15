@@ -84,13 +84,13 @@ io.on('connection', socket => {
                 
                 let didLevelUp = MergePets(-1, partyIndex,user.shopPets[shopIndex], user.partyPets[partyIndex], user);
 
-                let currentRandomThings = DoBuyEffect(user.partyPets[partyIndex], user);
+                let currentRandomEffects = DoBuyEffect(user.partyPets[partyIndex], user);
                 
                 user.shopPets[shopIndex] = null;
                 socket.emit('receiveShop', JSON.stringify(user.shopPets));
                 socket.emit('receiveParty', JSON.stringify(user.partyPets));
                 socket.emit('buySuccess', JSON.stringify({
-                    randomThings: currentRandomThings,
+                    randomEffects: currentRandomEffects,
                     buyIndex: partyIndex
                 }))
                 socket.emit("mergeSuccess", JSON.stringify({
@@ -104,12 +104,12 @@ io.on('connection', socket => {
                 user.shopPets[shopIndex] = null;
                 user.coins -= 3;
 
-                let currentRandomThings = DoBuyEffect(user.partyPets[partyIndex], user);
+                let currentRandomEffects = DoBuyEffect(user.partyPets[partyIndex], user);
                 
                 socket.emit('receiveParty', JSON.stringify(user.partyPets));
                 socket.emit('receiveShop', JSON.stringify(user.shopPets));
                 socket.emit('buySuccess', JSON.stringify({
-                    randomThings: currentRandomThings,
+                    randomEffects: currentRandomEffects,
                     buyIndex: partyIndex
                 }))
             }
@@ -158,7 +158,7 @@ io.on('connection', socket => {
             console.log(`${user.username} sold ${user.partyPets[index].name}`);
             user.coins += user.partyPets[index].level;
             
-            let currentRandomThings = DoSellEffect(user.partyPets[index], user);
+            let currentRandomEffects = DoSellEffect(user.partyPets[index], user);
             let soldPet = JSON.parse(JSON.stringify(user.partyPets[index]));
             
             user.partyPets[index] = null;
@@ -166,7 +166,7 @@ io.on('connection', socket => {
             // socket.emit('receiveParty', JSON.stringify(user.partyPets));
             socket.emit('receiveShop', JSON.stringify(user.shopPets));
             socket.emit('soldSuccess', JSON.stringify({
-                randomThings: currentRandomThings,
+                randomEffects: currentRandomEffects,
                 soldIndex: index
             }));
         }
@@ -182,7 +182,7 @@ io.on('connection', socket => {
                 console.log(`${user.username} and ${opponent.username} are ready to battle!`);
                 
                 
-                let randomThings = SimulateBattle(user, opponent);
+                let randomEffects = SimulateBattle(user, opponent);
                 
                 
                 // Send party to user with socket id
@@ -190,13 +190,13 @@ io.on('connection', socket => {
                 socket.broadcast.to(user.room).emit('receiveParty', JSON.stringify(opponent.partyPets));
                 socket.emit('battleStarted', JSON.stringify({
                     oppPets: opponent.partyPets,
-                    party1RandomThings: randomThings.party1,
-                    party2RandomThings: randomThings.party2
+                    party1RandomEffects: randomEffects.party1,
+                    party2RandomEffects: randomEffects.party2
                 }));
                 socket.broadcast.to(user.room).emit('battleStarted', JSON.stringify({
                     oppPets: user.partyPets,
-                    party1RandomThings: randomThings.party2,
-                    party2RandomThings: randomThings.party1
+                    party1RandomEffects: randomEffects.party2,
+                    party2RandomEffects: randomEffects.party1
                 }));
 
 
@@ -214,13 +214,13 @@ io.on('connection', socket => {
                 let user2 = Object.assign({}, user);
                 user2.username = user2.username + '2';
                 
-                let randomThings = SimulateBattle(user, user2);
+                let randomEffects = SimulateBattle(user, user2);
                 
                 socket.emit('receiveParty', JSON.stringify(user.partyPets));
                 socket.emit('battleStarted', JSON.stringify({
                     oppPets: user2.partyPets,
-                    party1RandomThings: randomThings.party1,
-                    party2RandomThings: randomThings.party2
+                    party1RandomEffects: randomEffects.party1,
+                    party2RandomEffects: randomEffects.party2
                 }));
                 
                 user.ready = false;

@@ -114,8 +114,8 @@ namespace auto_battler_frontend
                 
                 var oppPetsArr = (info as JObject).GetValue("oppPets").ToArray().Select(p => p.ToObject<Pet?>()).ToArray();
                 
-                var party1RandomThings = (info as JObject)?.GetValue("party1RandomThings")?.ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
-                var party2RandomThings = (info as JObject)?.GetValue("party2RandomThings")?.ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
+                var party1RandomEffects = (info as JObject)?.GetValue("party1RandomEffects")?.ToArray().Select(p => p.ToObject<RandomEffect>()).ToList();
+                var party2RandomEffects = (info as JObject)?.GetValue("party2RandomEffects")?.ToArray().Select(p => p.ToObject<RandomEffect>()).ToList();
                 
 
                 if (oppPetsArr == null) return;
@@ -141,7 +141,7 @@ namespace auto_battler_frontend
                 turn++;
                 turnLabel.Invoke((Action)(() => turnLabel.Text = $"Turn {turn}"));
 
-                BattleHelper.AnimateBattle(pets, oppPets, party1RandomThings, party2RandomThings);
+                BattleHelper.AnimateBattle(pets, oppPets, party1RandomEffects, party2RandomEffects);
             });
             
             client.On("soldSuccess", async(response) =>
@@ -153,9 +153,9 @@ namespace auto_battler_frontend
                 var soldIndex = (info as JObject).GetValue("soldIndex").ToObject(typeof(int)) as int?;
                 var soldPet = partyPets[soldIndex ?? -1];
                 
-                var randomThings = (info as JObject).GetValue("randomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
+                var randomEffects = (info as JObject).GetValue("randomEffects").ToArray().Select(p => p.ToObject<RandomEffect>()).ToList();
                 
-                await BattleHelper.DoSellEffect(soldPet, partyPets, randomThings);
+                await BattleHelper.DoSellEffect(soldPet, partyPets, randomEffects);
                 UpdateParty(partyPets);
             });
 
@@ -169,9 +169,9 @@ namespace auto_battler_frontend
                 var buyIndex = (info as JObject).GetValue("buyIndex").ToObject(typeof(int)) as int?;
                 var boughtPet = partyPets[buyIndex ?? -1];
                 
-                var randomThings = (info as JObject).GetValue("randomThings").ToArray().Select(p => p.ToObject<RandomThing>()).ToList();
+                var randomEffects = (info as JObject).GetValue("randomEffects").ToArray().Select(p => p.ToObject<RandomEffect>()).ToList();
                 
-                await BattleHelper.DoBuyEffect(boughtPet, partyPets, randomThings);
+                await BattleHelper.DoBuyEffect(boughtPet, partyPets, randomEffects);
             });
 
             client.On("mergeSuccess", async (response) =>
@@ -521,7 +521,7 @@ namespace auto_battler_frontend
         //     });
         // }
 
-        public class RandomThing
+        public class RandomEffect
         {
             [JsonProperty("petTrigger")]
             public int petTriggerIndex;

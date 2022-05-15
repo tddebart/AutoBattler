@@ -29,7 +29,7 @@ namespace auto_battler_frontend
         {
             // Pets.Init();
             
-            client = new SocketIO("http://localhost:3000");
+            client = new SocketIO("ws://localhost:3000");
 
             await client.ConnectAsync();
         }
